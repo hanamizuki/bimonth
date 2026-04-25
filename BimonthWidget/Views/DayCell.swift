@@ -1,9 +1,6 @@
-// 單一日期格。
-// 樣式組合：
-//   - isToday：紅色實心圓圈底 + 白字（覆蓋一切）
-//   - isCurrentMonth = false：次要色 + 半透明（前後月補滿格）
-//   - 週末（六、日）：regular 字重
-//   - 平日（一～五）：bold 字重
+// Style precedence: today's filled circle overrides everything; out-of-month days are blank
+// (matching the system Calendar widget — no leading/trailing month fill); weekday vs weekend
+// differ by both weight and color opacity to emphasize weekdays.
 import SwiftUI
 
 struct DayCell: View {
@@ -13,24 +10,30 @@ struct DayCell: View {
     let calendar: Calendar
 
     var body: some View {
-        let day = calendar.component(.day, from: date)
-
-        Text("\(day)")
-            .font(.system(size: 10, weight: weight).monospacedDigit())
-            .foregroundStyle(foreground)
-            .frame(width: 17, height: 17)
-            .background {
-                if isToday {
-                    Circle().fill(Color.red)
-                }
+        Group {
+            if isCurrentMonth {
+                let day = calendar.component(.day, from: date)
+                Text("\(day)")
+                    .font(.system(size: 10, weight: .regular).monospacedDigit())
+                    .foregroundStyle(foreground)
+                    .frame(width: 17, height: 17)
+                    .background {
+                        if isToday {
+                            Circle().fill(Color.red)
+                        }
+                    }
+            } else {
+                // Out-of-month days render blank but keep the slot to preserve grid alignment.
+                Color.clear
+                    .frame(width: 17, height: 17)
             }
-            .frame(maxWidth: .infinity)
-            .accessibilityLabel(accessibilityDateLabel)
-            .accessibilityAddTraits(isToday ? [.isSelected] : [])
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityLabel(accessibilityDateLabel)
+        .accessibilityAddTraits(isToday ? [.isSelected] : [])
     }
 
-    /// VoiceOver label：固定英文長日期格式（例：「April 26, 2026」）。
-    /// 不跟隨系統 locale，避免不同地區得到不同的 widget 朗讀文字。
+    /// VoiceOver label, fixed en_US (e.g. "April 26, 2026") to keep the spoken text consistent across locales.
     private var accessibilityDateLabel: String {
         date.formatted(
             .dateTime
@@ -41,17 +44,16 @@ struct DayCell: View {
         )
     }
 
-    /// 週末用 regular，平日用 bold，藉字重對比強化平日。
-    private var weight: Font.Weight {
-        calendar.isDateInWeekend(date) ? .regular : .bold
-    }
-
-    /// 文字色：今天白字覆蓋；非本月用半透明次要色；本月一般日用主要色。
+    /// Weekday vs weekend differ only by color (not weight) — all numbers share the same regular weight.
+    /// Today wins white; weekends fade to lighter primary; weekdays use full primary.
     private var foreground: Color {
         if isToday {
             return .white
         }
-        return isCurrentMonth ? .primary : .secondary.opacity(0.5)
+        if calendar.isDateInWeekend(date) {
+            return .primary.opacity(0.45)
+        }
+        return .primary
     }
 }
 

@@ -1,5 +1,4 @@
-// Widget 根 View：水平排列兩個 MonthView。
-// 由 MonthResolver 決定要顯示哪兩個月，entry.date 同時作為「今天」的基準。
+// entry.date is reused as the "today" baseline for both MonthView calls.
 import SwiftUI
 import WidgetKit
 
@@ -13,7 +12,7 @@ struct CalendarWidgetView: View {
             calendar: calendar
         )
 
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: 16) {
             MonthView(
                 monthStart: leading,
                 today: entry.date,
@@ -26,10 +25,4 @@ struct CalendarWidgetView: View {
             )
         }
     }
-}
-
-#Preview(as: .systemMedium) {
-    BimonthWidget()
-} timeline: {
-    CalendarEntry(date: Date())
 }

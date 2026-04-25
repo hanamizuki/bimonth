@@ -1,10 +1,9 @@
-// Widget 設定：定義 kind、display name、description、支援尺寸。
-// kind 為系統用來識別 widget 的字串，未來若新增更多 widget 種類務必使用不同 kind。
+// `kind` is a stable identity contract: bumping it orphans every user's installed widget instance.
 import WidgetKit
 import SwiftUI
 
 struct BimonthWidget: Widget {
-    let kind: String = "tw.hanamizuki.bimonth.widget.bimonth.v11"
+    let kind: String = "tw.hanamizuki.bimonth.widget.bimonth.v15"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
@@ -13,7 +12,7 @@ struct BimonthWidget: Widget {
         }
         .configurationDisplayName("Bimonth")
         .description("Two-month calendar shown side by side.")
-        // spec 3.1：本版僅支援 systemMedium。
+        // spec §3.1: only systemMedium is supported.
         .supportedFamilies([.systemMedium])
     }
 }
