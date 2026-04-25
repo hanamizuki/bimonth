@@ -1,0 +1,27 @@
+# Xcode 產出（由 xcodegen 重新生成）
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+build/
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods（未使用，但保險起見）
+Pods/
+
+# Fastlane / Carthage（未使用）
+fastlane/report.xml
+fastlane/screenshots/
+fastlane/test_output/
+Carthage/Build/
+
+# 其他
+*.swp
+*.log
