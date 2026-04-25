@@ -75,7 +75,7 @@ Widget 需在以下時機自動更新：
 
 - 外框圓角：依 WidgetKit 預設（`.containerBackground`）
 - 外距：交給 `.containerBackground` 處理，不額外 padding
-- 兩月之間分隔：12pt 間距
+- 兩月之間分隔：16pt 間距
 
 ### 4.2 字體
 
