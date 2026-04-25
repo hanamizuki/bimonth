@@ -7,14 +7,14 @@ struct DayCell: View {
     let date: Date
     let isCurrentMonth: Bool
     let isToday: Bool
-    let calendar: Calendar
+    @Environment(\.calendar) private var calendar
 
     var body: some View {
         Group {
             if isCurrentMonth {
                 let day = calendar.component(.day, from: date)
                 Text("\(day)")
-                    .font(.system(size: 10, weight: .regular).monospacedDigit())
+                    .font(.system(size: 10, weight: .medium))
                     .foregroundStyle(foreground)
                     .frame(width: 17, height: 17)
                     .background {
@@ -44,24 +44,25 @@ struct DayCell: View {
         )
     }
 
-    /// Weekday vs weekend differ only by color (not weight) — all numbers share the same regular weight.
-    /// Today wins white; weekends fade to lighter primary; weekdays use full primary.
+    /// Weekday vs weekend differ only by color — all numbers share the same medium weight.
+    /// Today wins white; weekends use system .secondary (matching the weekday header's gray);
+    /// weekdays use full primary.
     private var foreground: Color {
         if isToday {
             return .white
         }
         if calendar.isDateInWeekend(date) {
-            return .primary.opacity(0.45)
+            return Color.secondary
         }
-        return .primary
+        return Color.primary
     }
 }
 
 #Preview {
     HStack {
-        DayCell(date: Date(), isCurrentMonth: true, isToday: true, calendar: .current)
-        DayCell(date: Date(), isCurrentMonth: true, isToday: false, calendar: .current)
-        DayCell(date: Date(), isCurrentMonth: false, isToday: false, calendar: .current)
+        DayCell(date: Date(), isCurrentMonth: true, isToday: true)
+        DayCell(date: Date(), isCurrentMonth: true, isToday: false)
+        DayCell(date: Date(), isCurrentMonth: false, isToday: false)
     }
     .padding()
 }

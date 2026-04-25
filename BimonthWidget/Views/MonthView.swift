@@ -7,7 +7,7 @@ struct MonthView: View {
     let monthStart: Date
     /// "Today" baseline from the widget timeline entry.
     let today: Date
-    let calendar: Calendar
+    @Environment(\.calendar) private var calendar
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
@@ -19,30 +19,32 @@ struct MonthView: View {
                 .tracking(1)
                 .foregroundStyle(.red)
                 .padding(.leading, 6)
+                .padding(.bottom, 3)
 
-            // Weekday header — medium, secondary, reordered by calendar.firstWeekday.
-            HStack(spacing: 0) {
-                ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { _, symbol in
-                    Text(symbol)
-                        .font(.system(size: 8, weight: .medium))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-
-            // 6×7 day grid. 3pt row spacing matches the system Calendar widget's breathing room.
+            // Weekday header AND date grid live in ONE LazyVGrid so column widths are guaranteed
+            // identical. An HStack header + LazyVGrid grid can distribute width slightly
+            // differently and the columns drift visually.
+            // 3pt spacing applies between every row — header→first-week and week→week alike.
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7),
                 spacing: 3
             ) {
+                // Row 0: weekday header letters (S M T W T F S, reordered by firstWeekday).
+                // Match the date row's color logic — weekdays primary, weekends secondary.
+                ForEach(weekdaySymbols.indices, id: \.self) { i in
+                    Text(weekdaySymbols[i])
+                        .font(.system(size: 8, weight: .medium))
+                        .foregroundStyle(isWeekendColumn(i) ? Color.secondary : Color.primary)
+                        .frame(height: 12)
+                }
+                // Rows 1–6: 42 date cells.
                 ForEach(daysToDisplay, id: \.self) { date in
                     let isCurrentMonth = calendar.isDate(date, equalTo: monthStart, toGranularity: .month)
                     DayCell(
                         date: date,
                         isCurrentMonth: isCurrentMonth,
                         // Highlight only when the cell is in the current month — neighbor-month fill cells must not match.
-                        isToday: isCurrentMonth && calendar.isDate(date, inSameDayAs: today),
-                        calendar: calendar
+                        isToday: isCurrentMonth && calendar.isDate(date, inSameDayAs: today)
                     )
                 }
             }
@@ -56,6 +58,15 @@ struct MonthView: View {
         return monthStart
             .formatted(.dateTime.month(.wide).locale(locale))
             .uppercased(with: locale)
+    }
+
+    /// Whether the column at `index` (0-based, after firstWeekday rotation) corresponds to
+    /// a weekend day (Saturday or Sunday). Used to tint the weekday header consistently
+    /// with the date cells below.
+    private func isWeekendColumn(_ index: Int) -> Bool {
+        // Convert the rotated index back to a Gregorian weekday number (1=Sun ... 7=Sat).
+        let weekday = ((index + calendar.firstWeekday - 1) % 7) + 1
+        return weekday == 1 || weekday == 7
     }
 
     /// Weekday header symbols rotated to match calendar.firstWeekday.
@@ -84,12 +95,23 @@ struct MonthView: View {
     }
 }
 
-#Preview {
+#Preview("Sunday-start (default)") {
     MonthView(
         monthStart: Calendar.current.dateInterval(of: .month, for: Date())?.start ?? Date(),
-        today: Date(),
-        calendar: .current
+        today: Date()
     )
+    .padding()
+    .frame(width: 200)
+}
+
+#Preview("Monday-start") {
+    var monday = Calendar(identifier: .gregorian)
+    monday.firstWeekday = 2
+    return MonthView(
+        monthStart: monday.dateInterval(of: .month, for: Date())?.start ?? Date(),
+        today: Date()
+    )
+    .environment(\.calendar, monday)
     .padding()
     .frame(width: 200)
 }

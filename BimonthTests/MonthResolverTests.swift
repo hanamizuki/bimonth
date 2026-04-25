@@ -1,11 +1,13 @@
 // Edge-case tests for MonthResolver (spec §6.1). UTC + Gregorian fixed so results are
 // independent of the machine's time zone.
-import XCTest
+import Testing
+import Foundation
 
-final class MonthResolverTests: XCTestCase {
+@Suite("MonthResolver")
+struct MonthResolverTests {
 
     /// UTC fixed so timezones like Asia/Taipei don't shift 0:00 into the next day.
-    private var calendar: Calendar = {
+    private let calendar: Calendar = {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "UTC")!
         return cal
@@ -23,52 +25,54 @@ final class MonthResolverTests: XCTestCase {
 
     // MARK: - The 5 cases listed in spec §6.1
 
-    func test_day6_returns_previousAndCurrent() {
+    @Test("day 6 → previous + current")
+    func day6() {
         let result = MonthResolver.monthsToDisplay(for: date(2026, 4, 6), calendar: calendar)
-        XCTAssertEqual(result.leading, monthStart(2026, 3))
-        XCTAssertEqual(result.trailing, monthStart(2026, 4))
+        #expect(result.leading == monthStart(2026, 3))
+        #expect(result.trailing == monthStart(2026, 4))
     }
 
-    func test_day7_returns_currentAndNext() {
+    @Test("day 7 → current + next")
+    func day7() {
         let result = MonthResolver.monthsToDisplay(for: date(2026, 4, 7), calendar: calendar)
-        XCTAssertEqual(result.leading, monthStart(2026, 4))
-        XCTAssertEqual(result.trailing, monthStart(2026, 5))
+        #expect(result.leading == monthStart(2026, 4))
+        #expect(result.trailing == monthStart(2026, 5))
     }
 
-    func test_earlyJanuary_crossesYear_backwards() {
-        // Jan 3: previous Dec + current Jan.
+    @Test("early January (day 3) → previous Dec + current Jan, cross-year")
+    func earlyJanuaryCrossesYearBackwards() {
         let result = MonthResolver.monthsToDisplay(for: date(2026, 1, 3), calendar: calendar)
-        XCTAssertEqual(result.leading, monthStart(2025, 12))
-        XCTAssertEqual(result.trailing, monthStart(2026, 1))
+        #expect(result.leading == monthStart(2025, 12))
+        #expect(result.trailing == monthStart(2026, 1))
     }
 
-    func test_midDecember_crossesYear_forwards() {
-        // Dec 15: current Dec + next-year Jan.
+    @Test("mid December (day 15) → current Dec + next-year Jan, cross-year")
+    func midDecemberCrossesYearForwards() {
         let result = MonthResolver.monthsToDisplay(for: date(2025, 12, 15), calendar: calendar)
-        XCTAssertEqual(result.leading, monthStart(2025, 12))
-        XCTAssertEqual(result.trailing, monthStart(2026, 1))
+        #expect(result.leading == monthStart(2025, 12))
+        #expect(result.trailing == monthStart(2026, 1))
     }
 
-    func test_endOfMonth_returns_currentAndNext() {
-        // Apr 30 (month-end): current Apr + next May.
+    @Test("month-end (April 30) → current April + next May")
+    func endOfMonth() {
         let result = MonthResolver.monthsToDisplay(for: date(2026, 4, 30), calendar: calendar)
-        XCTAssertEqual(result.leading, monthStart(2026, 4))
-        XCTAssertEqual(result.trailing, monthStart(2026, 5))
+        #expect(result.leading == monthStart(2026, 4))
+        #expect(result.trailing == monthStart(2026, 5))
     }
 
     // MARK: - Additional edge cases
 
-    func test_day1_returns_previousAndCurrent() {
-        // day = 1 (< 7): previous + current.
+    @Test("day 1 (< 7) → previous + current")
+    func day1ReturnsPreviousAndCurrent() {
         let result = MonthResolver.monthsToDisplay(for: date(2026, 4, 1), calendar: calendar)
-        XCTAssertEqual(result.leading, monthStart(2026, 3))
-        XCTAssertEqual(result.trailing, monthStart(2026, 4))
+        #expect(result.leading == monthStart(2026, 3))
+        #expect(result.trailing == monthStart(2026, 4))
     }
 
-    func test_january1_crossesYear_backwards_to_december() {
-        // Jan 1: leading must be previous Dec.
+    @Test("January 1 → leading must be previous-year December")
+    func january1CrossesYearBackwardsToDecember() {
         let result = MonthResolver.monthsToDisplay(for: date(2026, 1, 1), calendar: calendar)
-        XCTAssertEqual(result.leading, monthStart(2025, 12))
-        XCTAssertEqual(result.trailing, monthStart(2026, 1))
+        #expect(result.leading == monthStart(2025, 12))
+        #expect(result.trailing == monthStart(2026, 1))
     }
 }
