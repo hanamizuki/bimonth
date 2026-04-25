@@ -36,14 +36,15 @@ struct DayCell: View {
         .accessibilityAddTraits(isToday ? [.isSelected] : [])
     }
 
-    /// VoiceOver label, fixed en_US (e.g. "April 26, 2026") to keep the spoken text consistent across locales.
+    /// VoiceOver label following the calendar's locale (same source the visible month title uses),
+    /// so a Chinese system reads dates in Chinese and an English system in English.
     private var accessibilityDateLabel: String {
         date.formatted(
             .dateTime
                 .year()
                 .month(.wide)
                 .day()
-                .locale(Locale(identifier: "en_US"))
+                .locale(calendar.locale ?? .current)
         )
     }
 
