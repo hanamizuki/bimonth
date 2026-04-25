@@ -43,7 +43,7 @@ targets:
       - path: BimonthWidget
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: tw.hanamizuki.bimonth.Widget
+        PRODUCT_BUNDLE_IDENTIFIER: tw.hanamizuki.bimonth.widget
         PRODUCT_NAME: BimonthWidget
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: BimonthWidget/Info.plist

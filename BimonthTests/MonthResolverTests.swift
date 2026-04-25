@@ -75,4 +75,41 @@ struct MonthResolverTests {
         #expect(result.leading == monthStart(2025, 12))
         #expect(result.trailing == monthStart(2026, 1))
     }
+
+    // MARK: - DST / leap-year / non-Gregorian (spec §5.3, §5.4)
+
+    @Test("DST boundary month (US Pacific, mid-March 2026) — month boundaries still correct")
+    func dstBoundaryMonth() {
+        var pacific = Calendar(identifier: .gregorian)
+        pacific.timeZone = TimeZone(identifier: "America/Los_Angeles")!
+
+        let march15Pacific = pacific.date(from: DateComponents(year: 2026, month: 3, day: 15))!
+        let result = MonthResolver.monthsToDisplay(for: march15Pacific, calendar: pacific)
+
+        let marchStart = pacific.date(from: DateComponents(year: 2026, month: 3, day: 1))!
+        let aprilStart = pacific.date(from: DateComponents(year: 2026, month: 4, day: 1))!
+        #expect(result.leading == marchStart)
+        #expect(result.trailing == aprilStart)
+    }
+
+    @Test("Leap-year February (Feb 29, 2024) — month-end resolution unaffected by leap day")
+    func leapYearFebruaryEnd() {
+        let result = MonthResolver.monthsToDisplay(for: date(2024, 2, 29), calendar: calendar)
+        #expect(result.leading == monthStart(2024, 2))
+        #expect(result.trailing == monthStart(2024, 3))
+    }
+
+    @Test("Non-Gregorian (Buddhist) calendar — no crash; trailing is exactly one month after leading")
+    func buddhistCalendarYieldsAdjacentMonths() {
+        var buddhist = Calendar(identifier: .buddhist)
+        buddhist.timeZone = TimeZone(identifier: "UTC")!
+
+        // Date is timezone-independent; pass any reference date and let buddhist's month
+        // arithmetic decide the actual month boundaries.
+        let testDate = date(2026, 4, 15)
+        let result = MonthResolver.monthsToDisplay(for: testDate, calendar: buddhist)
+
+        let oneMonthAfterLeading = buddhist.date(byAdding: .month, value: 1, to: result.leading)
+        #expect(oneMonthAfterLeading == result.trailing)
+    }
 }
