@@ -29,7 +29,10 @@ struct DayCell: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .accessibilityLabel(accessibilityDateLabel)
+        // Out-of-month cells render as Color.clear (no visible content), so they must also be
+        // hidden from VoiceOver. Otherwise users land on blank cells and hear an irrelevant date.
+        .accessibilityHidden(!isCurrentMonth)
+        .accessibilityLabel(isCurrentMonth ? accessibilityDateLabel : "")
         .accessibilityAddTraits(isToday ? [.isSelected] : [])
     }
 
