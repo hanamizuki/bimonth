@@ -4,7 +4,7 @@ import WidgetKit
 import SwiftUI
 
 struct BimonthWidget: Widget {
-    let kind: String = "tw.hanamizuki.bimonth.widget.bimonth.v4"
+    let kind: String = "tw.hanamizuki.bimonth.widget.bimonth.v11"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
@@ -12,7 +12,7 @@ struct BimonthWidget: Widget {
                 .containerBackground(.background, for: .widget)
         }
         .configurationDisplayName("Bimonth")
-        .description("並排顯示兩個月的月曆。")
+        .description("Two-month calendar shown side by side.")
         // spec 3.1：本版僅支援 systemMedium。
         .supportedFamilies([.systemMedium])
     }

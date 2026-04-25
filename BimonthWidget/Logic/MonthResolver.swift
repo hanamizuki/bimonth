@@ -17,17 +17,24 @@ enum MonthResolver {
     ) -> (leading: Date, trailing: Date) {
         let day = calendar.component(.day, from: date)
         // dateInterval(of: .month, for:).start 永遠回傳該月第一天 00:00。
-        // 這個 force unwrap 在 Gregorian 等正常曆法下不會失敗。
-        let currentMonth = calendar.dateInterval(of: .month, for: date)!.start
+        // 在 Gregorian 等正常曆法下不會失敗，但 spec §5.4 允許非 Gregorian 曆，
+        // 因此用 guard 兜底，回傳 (date, date) 讓畫面降級而非 widget crash。
+        guard let currentMonth = calendar.dateInterval(of: .month, for: date)?.start else {
+            return (date, date)
+        }
 
         if day < 7 {
             // 月初前 6 天：左側顯示上個月、右側顯示本月。
-            let previousMonth = calendar.date(byAdding: .month, value: -1, to: currentMonth)!
+            guard let previousMonth = calendar.date(byAdding: .month, value: -1, to: currentMonth) else {
+                return (currentMonth, currentMonth)
+            }
             return (previousMonth, currentMonth)
         } else {
             // 7 號當天起：左側本月、右側下個月。
             // 7 號為切換點的理由：本月還剩超過三週要過，看下個月比較有用。
-            let nextMonth = calendar.date(byAdding: .month, value: 1, to: currentMonth)!
+            guard let nextMonth = calendar.date(byAdding: .month, value: 1, to: currentMonth) else {
+                return (currentMonth, currentMonth)
+            }
             return (currentMonth, nextMonth)
         }
     }

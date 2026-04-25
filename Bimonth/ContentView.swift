@@ -14,7 +14,7 @@ struct ContentView: View {
                 .font(.title)
                 .fontWeight(.semibold)
 
-            Text("從通知中心或桌面右鍵點擊「Edit Widgets」新增雙月月曆 widget。")
+            Text("Add the Bimonth widget from Notification Center, or right-click the desktop and choose Edit Widgets.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

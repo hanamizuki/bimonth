@@ -16,10 +16,10 @@ struct MonthView: View {
     let calendar: Calendar
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 3) {
             // 月份標題：大寫月份名 + 主題紅色（不含年份），跟系統 Calendar widget 一致。
             Text(monthTitle)
-                .font(.system(size: 11, weight: .bold))
+                .font(.system(size: 9, weight: .bold))
                 .tracking(0.5)
                 .foregroundStyle(.red)
 
@@ -27,16 +27,16 @@ struct MonthView: View {
             HStack(spacing: 0) {
                 ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { _, symbol in
                     Text(symbol)
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 8, weight: .semibold))
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity)
                 }
             }
 
-            // 6×7 日期網格。row spacing 2pt 製造跟系統 Calendar widget 接近的呼吸感。
+            // 6×7 日期網格。row spacing 3pt 製造跟系統 Calendar widget 接近的呼吸感。
             LazyVGrid(
                 columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7),
-                spacing: 2
+                spacing: 3
             ) {
                 ForEach(daysToDisplay, id: \.self) { date in
                     let isCurrentMonth = calendar.isDate(date, equalTo: monthStart, toGranularity: .month)
@@ -94,7 +94,7 @@ struct MonthView: View {
 
 #Preview {
     MonthView(
-        monthStart: Calendar.current.dateInterval(of: .month, for: Date())!.start,
+        monthStart: Calendar.current.dateInterval(of: .month, for: Date())?.start ?? Date(),
         today: Date(),
         calendar: .current
     )

@@ -24,12 +24,12 @@
 
 並排顯示兩個月的月曆，每個月包含：
 
-- 月份標題（例：`April 2026`）
+- 月份標題（例：`APRIL`，全大寫月份名，不含年份，與系統 Calendar widget 風格一致）
 - 星期標題列（S M T W T F S，跟隨系統週起始日設定）
 - 日期網格（6 列 × 7 欄 = 42 格）
   - 本月日期以主要文字色顯示
   - 前後補滿的上/下月日期以次要文字色顯示
-  - 今天以橘色實心圓圈底、白色數字顯示
+  - 今天以紅色實心圓圈底、白色數字顯示
 
 ### 2.2 顯示範圍切換邏輯
 
@@ -73,29 +73,32 @@ Widget 需在以下時機自動更新：
 
 ### 4.1 版面
 
-- 外框圓角：依 WidgetKit 預設
-- 內距：16pt
-- 兩月之間分隔：16pt 間距
+- 外框圓角：依 WidgetKit 預設（`.containerBackground`）
+- 外距：交給 `.containerBackground` 處理，不額外 padding
+- 兩月之間分隔：12pt 間距
 
 ### 4.2 字體
 
-- 月份標題：`.system(.callout, design: .default, weight: .semibold)`
-- 星期標題：`.system(.caption2, design: .rounded)` + `.secondary` 色
-- 日期數字：`.system(.caption, design: .rounded)` + `.monospacedDigit()`
+採固定 pt 而非 Dynamic Type，目的是與系統 Calendar widget 的緊湊網格密度一致；widget 文字本來就不會跟 Dynamic Type 全幅縮放。具體 pt 值見實作（會視覺迭代調整），結構性決策如下：
+
+- 月份標題：bold + 字距 `tracking(0.5)`
+- 星期標題：semibold
+- 日期數字：`.monospacedDigit()`，**字重依平日／週末條件式**（`calendar.isDateInWeekend(date)` 為真用 `.regular`，否則 `.bold`），藉字重對比強化平日辨識
+- 日期網格 row spacing：3pt（給網格呼吸感、與系統 Calendar widget 接近）
 
 `.monospacedDigit()` 確保數字等寬，網格對齊整齊。
 
 ### 4.3 顏色
 
-使用 semantic color，自動支援深淺色模式：
+主要 semantic，可自動支援深淺色模式；月份標題與今天高亮使用品牌色（紅）：
 
 | 元素 | 顏色 |
 |------|------|
-| 月份標題 | `.primary` |
+| 月份標題 | `.red`（品牌色） |
 | 星期標題 | `.secondary` |
 | 本月日期 | `.primary` |
 | 非本月日期 | `.secondary.opacity(0.5)` |
-| 今天背景圓圈 | `.orange` |
+| 今天背景圓圈 | `.red`（品牌色） |
 | 今天數字 | `.white` |
 
 ### 4.4 週起始日
@@ -106,10 +109,10 @@ Widget 需在以下時機自動更新：
 
 ### 5.1 跨年切換
 
-- 12 月 7 號之後：顯示 12 月 + 隔年 1 月，月份標題需正確顯示年份
-- 1 月 1–6 號：顯示去年 12 月 + 今年 1 月，左側標題需顯示去年
+- 12 月 7 號之後：顯示 12 月 + 隔年 1 月
+- 1 月 1–6 號：顯示去年 12 月 + 今年 1 月
 
-月份標題統一使用 `DateFormatter` 搭配 locale 適配格式，不要硬編「月份名」。
+月份標題不顯示年份（與系統 Calendar widget 風格一致），跨年時左右兩個月份只能透過順序辨認（左為較早月份）。月份名稱統一使用 `DateFormatter` 搭配 locale 適配格式，不要硬編「月份名」。
 
 ### 5.2 時區變更
 
@@ -137,7 +140,7 @@ Widget 需在以下時機自動更新：
 
 - 今天高亮位置正確
 - 非本月日期灰色顯示
-- 月份標題年份正確（跨年時）
+- 跨年時左右兩月顯示正確（雖不顯示年份，但月份順序須正確）
 - 深淺色模式切換
 - 不同週起始日設定
 

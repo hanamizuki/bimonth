@@ -25,11 +25,10 @@ struct Provider: TimelineProvider {
 
         // 產生未來 7 天、每天 00:00 各一個 entry。
         // 使用 calendar.date(byAdding: .day, value:) 而非加減秒數，可正確處理 DST。
-        let entries: [CalendarEntry] = (0..<7).compactMap { offset in
-            guard let entryDate = calendar.date(byAdding: .day, value: offset, to: startOfToday) else {
-                return nil
-            }
-            return CalendarEntry(date: entryDate)
+        // 在 Gregorian 等正常曆法下加 0..<7 天不會失敗，nil 時用 startOfToday 兜底
+        // 確保 timeline 至少有可顯示的內容，不讓 widget 變空白。
+        let entries: [CalendarEntry] = (0..<7).map { offset in
+            CalendarEntry(date: calendar.date(byAdding: .day, value: offset, to: startOfToday) ?? startOfToday)
         }
 
         completion(Timeline(entries: entries, policy: .atEnd))
