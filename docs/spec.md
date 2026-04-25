@@ -1,154 +1,154 @@
-# macOS 雙月月曆 Widget 規格文件
+# macOS Bimonthly Calendar Widget — Spec
 
-## 1. 產品概述
+## 1. Overview
 
-在 macOS 桌面與通知中心提供一個乾淨的月曆 widget，並排顯示兩個月，依目前日期動態切換顯示範圍，讓使用者能同時看到「最近的過去」與「即將到來的未來」。
+A clean calendar widget for the macOS desktop and Notification Center showing two months side by side. The displayed range shifts automatically with the current date, so users see both "the recent past" and "the upcoming future" without manual switching.
 
-### 1.1 目標
+### 1.1 Goals
 
-- 一眼掌握前後兩個月的日期分佈
-- 依日期自動調整顯示範圍，不需手動切換
-- 視覺簡潔，符合 macOS 原生風格
-- 支援深淺色模式
+- See the date layout for the two surrounding months at a glance
+- Auto-shift the visible range based on date — no manual switching
+- Visually clean, consistent with the macOS native style
+- Light/dark mode support
 
-### 1.2 非目標（本版不做）
+### 1.2 Non-goals (out of scope for this version)
 
-- 顯示行事曆事件、提醒事項、生理期等圓點標記
-- 週檢視、年檢視
-- 點擊日期跳轉到行事曆 app
-- 使用者設定（週起始日、主題色等）
+- Calendar events, reminders, period markers, or other dot indicators
+- Week or year views
+- Tap-to-open a date in the system Calendar app
+- User settings (first-day-of-week, theme color, etc.)
 
-## 2. 功能規格
+## 2. Functional spec
 
-### 2.1 顯示內容
+### 2.1 What is shown
 
-並排顯示兩個月的月曆，每個月包含：
+Two months rendered side by side. Each month contains:
 
-- 月份標題（例：`APRIL`，全大寫月份名，不含年份，與系統 Calendar widget 風格一致）
-- 星期標題列（S M T W T F S，跟隨系統週起始日設定）
-- 日期網格（6 列 × 7 欄 = 42 格）
-  - 本月平日以主要文字色顯示，本月週末以次要文字色顯示
-  - 前後補滿的上/下月日期留白（不顯示數字），僅保留格子佔位以維持網格對齊（與系統 Calendar widget 一致）
-  - 今天以紅色實心圓圈底、白色數字顯示
+- Month title (e.g. `APRIL`, fully uppercased month name with no year — matches the system Calendar widget)
+- Weekday header row (S M T W T F S, reordered to match the system first-day-of-week)
+- Day grid (6 rows × 7 cols = 42 cells)
+  - In-month weekdays render in the primary text color; in-month weekends in the secondary color
+  - Out-of-month leading/trailing cells render blank (no number) but keep their slot for grid alignment, matching the system Calendar widget
+  - Today renders with a solid red circle background and white digit
 
-### 2.2 顯示範圍切換邏輯
+### 2.2 Display range switching
 
-根據今天的日期（`day` 為 1–31）決定顯示哪兩個月：
+Decided by today's day-of-month (`day` is 1–31):
 
-| 條件 | 左側月份 | 右側月份 |
-|------|---------|---------|
-| `day < 7`（1–6 號） | 上個月 | 本月 |
-| `day >= 7`（7–31 號） | 本月 | 下個月 |
+| Condition          | Left month | Right month |
+|--------------------|------------|-------------|
+| `day < 7` (1–6)    | Previous   | Current     |
+| `day >= 7` (7–31)  | Current    | Next        |
 
-**切換日決定**：7 號當天切換為「本月 + 下月」。理由是 7 號時本月還有三週以上要過，看下個月比較有用。
+**Switch day:** the 7th flips to "current + next." On the 7th, more than three weeks of the current month still lie ahead, so showing the next month is more useful.
 
-### 2.3 自動更新
+### 2.3 Auto-update
 
-Widget 需在以下時機自動更新：
+The widget needs to refresh at:
 
-- 每天 00:00：今天的高亮圓圈要移動到新日期
-- 切換日（每月 7 號）00:00：從「上月+本月」切到「本月+下月」
-- 每月 1 號 00:00：「本月+下月」中的「本月」變成新月份
+- Daily 00:00 — the today highlight moves to the new date
+- Switch day (7th of each month) 00:00 — switch from "previous + current" to "current + next"
+- 1st of each month 00:00 — within "current + next," the current month becomes the new month
 
-實作策略：每次 `getTimeline` 產生未來 7 天、每天午夜一個 entry，`policy` 設為 `.atEnd`，由系統自動排程。
+Implementation: each `getTimeline` call generates 7 entries (one per day at midnight) with `policy = .atEnd`; the system schedules them automatically.
 
-## 3. 技術規格
+## 3. Technical spec
 
-### 3.1 技術棧
+### 3.1 Stack
 
-- **語言**：Swift
-- **框架**：WidgetKit + SwiftUI
-- **最低系統版本**：macOS 14（Sonoma）
-- **Widget 尺寸**：僅 `.systemMedium`
+- **Language:** Swift
+- **Frameworks:** WidgetKit + SwiftUI
+- **Minimum OS:** macOS 14 (Sonoma)
+- **Widget size:** `.systemMedium` only
 
-### 3.2 顯示範圍切換邏輯
+### 3.2 Display range switching logic
 
-見 `BimonthWidget/Logic/MonthResolver.swift`。純函式，容易寫單元測試。
+See `BimonthWidget/Logic/MonthResolver.swift`. Pure function, easy to unit-test.
 
-### 3.3 Timeline 策略
+### 3.3 Timeline strategy
 
-`Provider.getTimeline` 產生未來 7 天、每天 00:00 一個 entry，`policy = .atEnd`。系統會在最後一個 entry 過後再請求新的 timeline。
+`Provider.getTimeline` produces 7 entries (one per day at 00:00) with `policy = .atEnd`. The system requests a fresh timeline after the last entry.
 
-## 4. 視覺設計
+## 4. Visual design
 
-### 4.1 版面
+### 4.1 Layout
 
-- 外框圓角：依 WidgetKit 預設（`.containerBackground`）
-- 外距：交給 `.containerBackground` 處理，不額外 padding
-- 兩月之間分隔：16pt 間距
+- Outer corner radius: WidgetKit default (`.containerBackground`)
+- Outer padding: handled by `.containerBackground` — no extra padding
+- Spacing between the two months: 16pt
 
-### 4.2 字體
+### 4.2 Typography
 
-採固定 pt 而非 Dynamic Type，目的是與系統 Calendar widget 的緊湊網格密度一致；widget 文字本來就不會跟 Dynamic Type 全幅縮放。具體 pt 值與字距會視覺迭代調整，以實作為準（見 `MonthView.swift` / `DayCell.swift`）；結構性決策如下：
+Fixed pt sizes rather than Dynamic Type, to match the compact grid density of the system Calendar widget; widget text doesn't fully scale with Dynamic Type anyway. Specific pt sizes and tracking values evolve during visual iteration — treat the source as the source of truth (see `MonthView.swift` / `DayCell.swift`). Structural decisions:
 
-- 月份標題：bold + 字距加寬（具體值以實作為準）
-- 星期標題：medium
-- 日期數字：medium，平日／週末透過顏色（非字重）區分，避免不同字重在小字級下造成排版抖動
-- 日期網格 row spacing：3pt（給網格呼吸感、與系統 Calendar widget 接近）
+- Month title: bold, with letter tracking (specific value in source)
+- Weekday header: medium
+- Day numbers: medium; weekday vs. weekend differentiated by **color**, not weight, to avoid rendering jitter at small sizes
+- Day grid row spacing: 3pt — gives the grid breathing room similar to the system Calendar widget
 
-備註：早期版本曾使用 `.monospacedDigit()` 與字重條件式對比，後來改為統一字重 + 顏色對比，視覺更穩定。
+Note: an earlier version used `.monospacedDigit()` and weekday-conditional weight; switched to uniform weight + color contrast for visual stability.
 
-### 4.3 顏色
+### 4.3 Colors
 
-主要 semantic，可自動支援深淺色模式；月份標題與今天高亮使用品牌色（紅）：
+Mostly semantic so dark/light mode follows automatically. The month title and today highlight use the brand color (red):
 
-| 元素 | 顏色 |
-|------|------|
-| 月份標題 | `.red`（品牌色） |
-| 星期標題（平日欄） | `.primary` |
-| 星期標題（週末欄） | `.secondary` |
-| 本月平日 | `.primary` |
-| 本月週末 | `.secondary` |
-| 非本月日期 | 不顯示（`Color.clear` 佔位） |
-| 今天背景圓圈 | `.red`（品牌色） |
-| 今天數字 | `.white` |
+| Element                       | Color                                |
+|-------------------------------|--------------------------------------|
+| Month title                   | `.red` (brand)                       |
+| Weekday header (weekday cols) | `.primary`                           |
+| Weekday header (weekend cols) | `.secondary`                         |
+| In-month weekday              | `.primary`                           |
+| In-month weekend              | `.secondary`                         |
+| Out-of-month days             | Blank (`Color.clear` placeholder)    |
+| Today background circle       | `.red` (brand)                       |
+| Today digit                   | `.white`                             |
 
-### 4.4 週起始日
+### 4.4 First-day-of-week
 
-跟隨 `Calendar.current.firstWeekday`（系統設定）。台灣預設為 1（週日），歐洲地區常為 2（週一）。星期標題列與日期網格皆需依此調整。
+Follows `Calendar.current.firstWeekday`. Defaults vary by region: Sunday (1) in many regions, Monday (2) in much of Europe. Both the weekday header and the day grid adjust accordingly.
 
-## 5. 邊界情況
+## 5. Edge cases
 
-### 5.1 跨年切換
+### 5.1 Year crossover
 
-- 12 月 7 號之後：顯示 12 月 + 隔年 1 月
-- 1 月 1–6 號：顯示去年 12 月 + 今年 1 月
+- After Dec 7: show December + January of next year
+- Jan 1–6: show December of last year + January
 
-月份標題不顯示年份（與系統 Calendar widget 風格一致），跨年時左右兩個月份只能透過順序辨認（左為較早月份）。月份名稱統一使用 `DateFormatter` 搭配 locale 適配格式，不要硬編「月份名」。
+The month title doesn't show the year (matches the system Calendar widget). When months span a year boundary, the order distinguishes them (left = earlier month). Month names are produced via `DateFormatter` with locale-appropriate formatting — never hard-coded.
 
-### 5.2 時區變更
+### 5.2 Time zone change
 
-`Provider` 產生 timeline 時使用 `Calendar.current`，會跟隨系統時區。跨時區旅行時系統會重新觸發 timeline 請求。
+`Provider` builds the timeline with `Calendar.current`, so it follows the system time zone. When the user travels, the system requests a fresh timeline.
 
-### 5.3 夏令時間
+### 5.3 Daylight saving time
 
-使用 `calendar.date(byAdding: .day, value:)` 而非加減秒數，可正確處理 DST。
+Use `calendar.date(byAdding: .day, value:)` instead of adding/subtracting seconds — this handles DST transitions correctly.
 
-### 5.4 非 Gregorian 曆法
+### 5.4 Non-Gregorian calendars
 
-`Calendar.current` 可能不是公曆。本版採 `Calendar.current` 跟隨使用者偏好。
+`Calendar.current` may not be Gregorian. This version uses `Calendar.current` and follows the user's preference.
 
-## 6. 測試重點
+## 6. Test focus
 
-### 6.1 單元測試（MonthResolver）
+### 6.1 Unit tests (MonthResolver)
 
-- 給定 2026-04-06（day=6）→ 回傳（2026-03, 2026-04）
-- 給定 2026-04-07（day=7）→ 回傳（2026-04, 2026-05）
-- 給定 2026-01-03（day=3）→ 回傳（2025-12, 2026-01）
-- 給定 2025-12-15（day=15）→ 回傳（2025-12, 2026-01）
-- 給定月底（2026-04-30）→ 回傳（2026-04, 2026-05）
+- `2026-04-06` (day=6) → `(2026-03, 2026-04)`
+- `2026-04-07` (day=7) → `(2026-04, 2026-05)`
+- `2026-01-03` (day=3) → `(2025-12, 2026-01)`
+- `2025-12-15` (day=15) → `(2025-12, 2026-01)`
+- Month-end `2026-04-30` → `(2026-04, 2026-05)`
 
-### 6.2 視覺檢查
+### 6.2 Visual checks
 
-- 今天高亮位置正確
-- 非本月日期留白（不顯示數字）
-- 跨年時左右兩月顯示正確（雖不顯示年份，但月份順序須正確）
-- 深淺色模式切換
-- 不同週起始日設定
+- Today highlight lands on the correct cell
+- Out-of-month days render blank (no digit)
+- Year-crossover months render in the correct left-to-right order (year is not shown, but order must be right)
+- Light/dark mode switching
+- Different first-day-of-week settings
 
-## 7. 未來擴充方向（非本版範圍）
+## 7. Future directions (out of scope for this version)
 
-- 支援 `.systemLarge`：四個月 2×2 排列
-- 加入 EventKit 整合，顯示事件圓點
-- 支援使用者透過 Widget configuration 調整週起始日、主題色
-- 點擊日期以 `widgetURL` 跳轉到行事曆 app 的該日檢視
+- `.systemLarge` support: four months in a 2×2 layout
+- EventKit integration to render event dots
+- User-configurable first-day-of-week and theme color via Widget configuration
+- Tap-to-open in the system Calendar app at the tapped date via `widgetURL`
