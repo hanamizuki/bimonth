@@ -60,13 +60,15 @@ struct MonthView: View {
             .uppercased(with: locale)
     }
 
-    /// Whether the column at `index` (0-based, after firstWeekday rotation) corresponds to
-    /// a weekend day (Saturday or Sunday). Used to tint the weekday header consistently
-    /// with the date cells below.
+    /// Whether the column at `index` (0-based, after firstWeekday rotation) corresponds to a
+    /// weekend day. Delegates to `Calendar.isDateInWeekend` so locales with non-Sat/Sun weekends
+    /// (e.g. Friday-Saturday in some Middle Eastern locales) tint the header consistently with
+    /// the date cells below.
     private func isWeekendColumn(_ index: Int) -> Bool {
-        // Convert the rotated index back to a Gregorian weekday number (1=Sun ... 7=Sat).
-        let weekday = ((index + calendar.firstWeekday - 1) % 7) + 1
-        return weekday == 1 || weekday == 7
+        // Pick the date in the first grid row at `index`. Each column shares the same weekday
+        // across all 6 rows, so the first row's date is sufficient to ask the Calendar.
+        guard index < daysToDisplay.count else { return false }
+        return calendar.isDateInWeekend(daysToDisplay[index])
     }
 
     /// Weekday header symbols rotated to match calendar.firstWeekday.
