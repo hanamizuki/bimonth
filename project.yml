@@ -20,6 +20,7 @@ targets:
     platform: macOS
     sources:
       - path: Bimonth
+      - path: Shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth
@@ -41,6 +42,7 @@ targets:
     platform: macOS
     sources:
       - path: BimonthWidget
+      - path: Shared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth.widget

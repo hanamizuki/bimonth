@@ -19,7 +19,9 @@ struct DayCell: View {
                     .frame(width: 17, height: 17)
                     .background {
                         if isToday {
-                            Circle().fill(Color.red)
+                            // Brand accent: muted sage green is the only chromatic color
+                            // in the palette, reserved for today's single point of emphasis.
+                            Circle().fill(Color.brandSage)
                         }
                     }
             } else {
@@ -49,11 +51,13 @@ struct DayCell: View {
     }
 
     /// Weekday vs weekend differ only by color — all numbers share the same medium weight.
-    /// Today wins white; weekends use system .secondary (matching the weekday header's gray);
-    /// weekdays use full primary.
+    /// Today wins brand `parchment` (cream-on-sage for a warm, vintage-tag feel);
+    /// weekends use system `.secondary` (matching the weekday header's gray);
+    /// weekdays use full `.primary`. Body text intentionally stays on system semantic
+    /// colors so light/dark mode adapts automatically without a custom palette mapping.
     private var foreground: Color {
         if isToday {
-            return .white
+            return .brandParchment
         }
         if calendar.isDateInWeekend(date) {
             return Color.secondary

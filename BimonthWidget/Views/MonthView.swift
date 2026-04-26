@@ -11,12 +11,13 @@ struct MonthView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
-            // Uppercase month name in brand red, no year — matches system Calendar widget.
+            // Uppercase month name in brand `bark` (warm brown), no year — matches the system
+            // Calendar widget structure with Bimonth's earth-toned palette.
             // padding(.leading, 6): aligns the title's left edge with two-digit day numbers
             // in column 1 (17pt cell centered in ~22pt column → digit-left at ≈6pt).
             Text(monthTitle)
                 .font(.system(size: 9, weight: .bold))
-                .foregroundStyle(.red)
+                .foregroundStyle(Color.brandBark)
                 .padding(.leading, 6)
                 .padding(.bottom, 3)
 

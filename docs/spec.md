@@ -90,18 +90,22 @@ Note: an earlier version used `.monospacedDigit()` and weekday-conditional weigh
 
 ### 4.3 Colors
 
-Mostly semantic so dark/light mode follows automatically. The month title and today highlight use the brand color (red):
+Brand-mapped where the palette asserts identity (month title, today highlight); system semantic everywhere else so light/dark mode adapts automatically without a custom dark palette. The full palette and design rationale live in `.impeccable.md` at the repo root; the table below only documents how those tokens map to widget elements.
 
-| Element                       | Color                                |
-|-------------------------------|--------------------------------------|
-| Month title                   | `.red` (brand)                       |
-| Weekday header (weekday cols) | `.primary`                           |
-| Weekday header (weekend cols) | `.secondary`                         |
-| In-month weekday              | `.primary`                           |
-| In-month weekend              | `.secondary`                         |
-| Out-of-month days             | Blank (`Color.clear` placeholder)    |
-| Today background circle       | `.red` (brand)                       |
-| Today digit                   | `.white`                             |
+| Element                       | Color                                          |
+|-------------------------------|------------------------------------------------|
+| Month title                   | `.brandBark` (#585142, warm brown)             |
+| Weekday header (weekday cols) | `.primary`                                     |
+| Weekday header (weekend cols) | `.secondary`                                   |
+| In-month weekday              | `.primary`                                     |
+| In-month weekend              | `.secondary`                                   |
+| Out-of-month days             | Blank (`Color.clear` placeholder)              |
+| Today background circle       | `.brandSage` (#8AAB94, muted green)            |
+| Today digit                   | `.brandParchment` (#EBDAB2, warm cream)        |
+
+Brand tokens are defined in `Shared/Colors.swift` and shared by both the container app and the widget extension via `project.yml`.
+
+**Dark-mode caveat (follow-up):** `brandBark` is a dark warm brown and will read poorly on a dark widget background. The current implementation defines only light-mode hex values; migrating `Shared/Colors.swift` to Asset Catalog Color Sets with explicit light/dark pairs is the next step. `brandSage` and `brandParchment` (the today highlight) read in both modes and do not need adjustment.
 
 ### 4.4 First-day-of-week
 
