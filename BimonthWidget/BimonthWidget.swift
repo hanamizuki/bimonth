@@ -3,7 +3,7 @@ import WidgetKit
 import SwiftUI
 
 struct BimonthWidget: Widget {
-    let kind: String = "tw.hanamizuki.bimonth.widget.bimonth"
+    let kind: String = "com.example.bimonth.widget.bimonth"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
