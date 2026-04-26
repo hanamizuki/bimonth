@@ -16,7 +16,6 @@ struct MonthView: View {
             // in column 1 (17pt cell centered in ~22pt column → digit-left at ≈6pt).
             Text(monthTitle)
                 .font(.system(size: 9, weight: .bold))
-                .tracking(1)
                 .foregroundStyle(.red)
                 .padding(.leading, 6)
                 .padding(.bottom, 3)
