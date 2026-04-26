@@ -1,7 +1,7 @@
 // Bimonth brand palette tokens.
 //
-// Source of truth for hex values and roles is `.impeccable.md` at the repo
-// root. Both targets — the container app (Bimonth) and the widget extension
+// Source of truth for hex values and roles is `DESIGN.md` at the repo root.
+// Both targets — the container app (Bimonth) and the widget extension
 // (BimonthWidget) — link this file via `project.yml`.
 //
 // NOTE: only light-mode values are defined here. Dark-mode variants are not

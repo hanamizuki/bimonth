@@ -25,3 +25,6 @@ Carthage/Build/
 # Misc
 *.swp
 *.log
+
+# Local AI design context (private; DESIGN.md is the public source of truth)
+.impeccable.md

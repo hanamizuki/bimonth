@@ -48,9 +48,6 @@ components:
 > The YAML uses `px` to satisfy the DESIGN.md spec; on macOS @1x, 1px ≈ 1pt.
 > Treat every numeric value as a SwiftUI `CGFloat`, not a CSS pixel.
 
-> **Audience.** Who Bimonth is for and how the widget is read in the wild
-> live in [`.impeccable.md`](./.impeccable.md). This file is the visual system.
-
 ## Overview
 
 Bimonth is a macOS desktop / Notification Center widget that shows two adjacent

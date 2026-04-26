@@ -90,7 +90,7 @@ Note: an earlier version used `.monospacedDigit()` and weekday-conditional weigh
 
 ### 4.3 Colors
 
-Brand-mapped where the palette asserts identity (month title, today highlight); system semantic everywhere else so light/dark mode adapts automatically without a custom dark palette. The full palette and design rationale live in `.impeccable.md` at the repo root; the table below only documents how those tokens map to widget elements.
+Brand-mapped where the palette asserts identity (month title, today highlight); system semantic everywhere else so light/dark mode adapts automatically without a custom dark palette. The full palette and design rationale live in `DESIGN.md` at the repo root; the table below only documents how those tokens map to widget elements.
 
 | Element                       | Color                                          |
 |-------------------------------|------------------------------------------------|
