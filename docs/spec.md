@@ -101,11 +101,9 @@ Brand-mapped where the palette asserts identity (month title, today highlight); 
 | In-month weekend              | `.secondary`                                   |
 | Out-of-month days             | Blank (`Color.clear` placeholder)              |
 | Today background circle       | `.brandSage` (#8AAB94, muted green)            |
-| Today digit                   | `.brandParchment` (#EBDAB2, warm cream)        |
+| Today digit                   | `.brandInk` (#161600, olive-black; ≈ 7.6:1 on sage) |
 
-Brand tokens are defined in `Shared/Colors.swift` and shared by both the container app and the widget extension via `project.yml`.
-
-**Dark-mode caveat (follow-up):** `brandBark` is a dark warm brown and will read poorly on a dark widget background. The current implementation defines only light-mode hex values; migrating `Shared/Colors.swift` to Asset Catalog Color Sets with explicit light/dark pairs is the next step. `brandSage` and `brandParchment` (the today highlight) read in both modes and do not need adjustment.
+Brand tokens are defined in `Shared/Colors.swift` and shared by both the container app and the widget extension via `project.yml`. `brandBark` is dynamic per system appearance (light #585142 / dark #B5AD99 via `NSColor`'s `name:dynamicProvider:` API), so the month title stays legible on both bright and dark widget backgrounds. The remaining tokens are static and either work in both modes (`brandSage`, `brandParchment`) or aren't yet used on a dark surface.
 
 ### 4.4 First-day-of-week
 

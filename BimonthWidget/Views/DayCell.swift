@@ -51,13 +51,13 @@ struct DayCell: View {
     }
 
     /// Weekday vs weekend differ only by color — all numbers share the same medium weight.
-    /// Today wins brand `parchment` (cream-on-sage for a warm, vintage-tag feel);
+    /// Today wins brand `ink` (deep olive-black on sage, ≈ 7.6:1 contrast, AAA);
     /// weekends use system `.secondary` (matching the weekday header's gray);
     /// weekdays use full `.primary`. Body text intentionally stays on system semantic
     /// colors so light/dark mode adapts automatically without a custom palette mapping.
     private var foreground: Color {
         if isToday {
-            return .brandParchment
+            return .brandInk
         }
         if calendar.isDateInWeekend(date) {
             return Color.secondary

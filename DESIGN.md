@@ -40,7 +40,7 @@ components:
     typography: "{typography.day-number}"
     size: 17px
     backgroundColor: "{colors.sage}"
-    textColor: "{colors.parchment}"
+    textColor: "{colors.ink}"
     rounded: "{rounded.full}"
 ---
 
@@ -75,17 +75,19 @@ signal: if a color feels bright or vibrant, it does not belong here. The palette
 caps at parchment on the light end and ink on the dark end. **No pure white, no
 pure black.**
 
-- **Ink (#161600):** Olive-black. Deepest contrast. Reserved for primary text;
-  currently unused in the widget surface (`.primary` covers this role via
-  system semantic color so light/dark adapts automatically).
+- **Ink (#161600):** Olive-black. Deepest contrast. Used as the today digit
+  on the sage circle (≈ 7.6:1 contrast — the cream-on-sage alternative reads
+  at only 1.8:1, well below WCAG AA, so ink is the legible choice). Body text
+  uses system `.primary` so light/dark adapts automatically.
 - **Bark (#585142):** Warm brown. Secondary text and dark accents. Drives the
   uppercase month title in the widget.
 - **Stone (#938A76):** Warm gray. Mid-tone for dividers, captions, tertiary text.
   Reserved; currently unused in the widget.
 - **Sage (#8AAB94):** Muted green. The single chromatic accent. Reserved for the
   today highlight background. Use sparingly, for a single emphasis at a time.
-- **Parchment (#EBDAB2):** Warm cream. Surface highlight and the today digit
-  color (cream-on-sage for a vintage paper-tag feel).
+- **Parchment (#EBDAB2):** Warm cream. Reserved for warm cream surfaces; not
+  used in the current widget (it failed contrast against sage and was replaced
+  by ink for the today digit).
 
 ### Light & Dark
 
@@ -101,10 +103,12 @@ today, but all tokens declare both modes for future use:
 | `sage` | `#8AAB94` | `#8AAB94` | Unchanged; the single accent reads in both modes. |
 | `parchment` | `#EBDAB2` | `#EBDAB2` | Unchanged; today digit on sage works in both. |
 
-Implementation note: brand tokens live in a Swift `Color` extension. The dark
-variants are not yet wired in — migrating to Asset Catalog Color Sets is the
-follow-up. Until then, only `bark` (the month title) is at risk of low contrast
-on dark surfaces.
+Implementation note: brand tokens live in a Swift `Color` extension.
+`brandBark` uses `NSColor`'s dynamic-provider API so the same `Color.brandBark`
+reference resolves to the warm brown on light and the lifted taupe on dark.
+The other tokens are static `Color` literals; their dark hexes above are
+documented for future reference (e.g. if `brandInk` ever appears on a dark
+surface), not currently wired.
 
 ## Typography
 
@@ -194,9 +198,9 @@ nothing else should be invented without revisiting the brand principles.
   as `Color.clear` placeholders to preserve grid alignment, and are hidden
   from VoiceOver.
 - **`day-cell-today`** — variant of `day-cell`. Background: a `sage` filled
-  circle (full radius). Digit: `parchment`. Same 17×17pt size, same 10pt
-  medium weight. Today is signaled by **color and shape**, never by font
-  weight or size.
+  circle (full radius). Digit: `ink` (≈ 7.6:1 contrast on sage). Same 17×17pt
+  size, same 10pt medium weight. Today is signaled by **color and shape**,
+  never by font weight or size.
 
 The container app (`ContentView`) deliberately has no branded components —
 just an SF Symbol calendar icon (48pt, in `bark`) and two system-styled text
