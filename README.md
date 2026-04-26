@@ -21,7 +21,7 @@ Full spec: [`docs/spec.md`](docs/spec.md).
 
 ## First-time setup
 
-1. Edit `project.yml` and change `bundleIdPrefix: com.example` to your own reverse-DNS prefix, so Xcode can sign the targets against your Apple ID.
+1. Edit `project.yml` and replace every occurrence of `com.example` with your own reverse-DNS prefix (the `bundleIdPrefix` plus the three `PRODUCT_BUNDLE_IDENTIFIER` values), so Xcode can sign the targets against your Apple ID.
 2. Generate the Xcode project and open it:
 
    ```bash

@@ -1,9 +1,9 @@
-// `kind` is a stable identity contract: bumping it orphans every user's installed widget instance.
+// `kind` is a stable identity contract: bumping it orphans every user's installed widget instance. Opaque to WidgetKit — does not need to match the bundle ID.
 import WidgetKit
 import SwiftUI
 
 struct BimonthWidget: Widget {
-    let kind: String = "com.example.bimonth.widget.bimonth"
+    let kind: String = "BimonthWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
