@@ -33,6 +33,22 @@ Full spec: [`docs/spec.md`](docs/spec.md).
 
 3. On first launch, Xcode prompts for a Development Team for both targets (`Bimonth` and `BimonthWidget`); a personal Apple ID works.
 
+## Prompt for Claude Code or other coding agents
+
+Paste this into Claude Code, Cursor, Codex, or any AI coding agent that can run commands in this repo to automate the setup above:
+
+> You are helping me set up Bimonth on this macOS machine. First read `README.md` and `CLAUDE.md` for context, then:
+>
+> 1. Confirm Xcode 16+ is installed (`xcodebuild -version`). If not, stop and tell me to install it from the Mac App Store.
+> 2. Install `xcodegen` if it's missing (`brew install xcodegen`).
+> 3. Ask me for a reverse-DNS bundle prefix (e.g. `com.alice.bimonth`) and replace every occurrence of `com.example` in `project.yml` with it.
+> 4. Run `xcodegen generate`.
+> 5. Build the Debug `Bimonth` scheme for macOS with `xcodebuild`.
+> 6. On a successful build, open the produced `Bimonth.app` and walk me through the widget reload steps from `CLAUDE.md` so `chronod` picks up the fresh extension.
+> 7. Tell me to add the widget via right-click desktop → Edit Widgets.
+>
+> If any step fails, stop and ask before proceeding. Do not commit, push, or modify anything outside this repo.
+
 ## Running the widget
 
 1. In Xcode, select the `Bimonth` scheme and Build & Run (this launches the container app).
