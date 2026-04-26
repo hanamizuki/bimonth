@@ -2,7 +2,9 @@
 
 A macOS desktop bimonthly-calendar widget. Shows two months side by side and shifts the displayed range based on the current date so you can see both "the recent past" and "the upcoming future" at a glance.
 
-Full spec: `docs/spec.md`.
+![Bimonth widget showing April and May side by side](docs/screenshot.png)
+
+Full spec: [`docs/spec.md`](docs/spec.md).
 
 ## Display range
 
@@ -19,13 +21,16 @@ Full spec: `docs/spec.md`.
 
 ## First-time setup
 
-```bash
-cd path/to/bimonth
-xcodegen generate
-open Bimonth.xcodeproj
-```
+1. Edit `project.yml` and replace every occurrence of `com.example` with your own reverse-DNS prefix (the `bundleIdPrefix` plus the three `PRODUCT_BUNDLE_IDENTIFIER` values), so Xcode can sign the targets against your Apple ID.
+2. Generate the Xcode project and open it:
 
-On first launch, Xcode prompts for a Development Team for both targets (`Bimonth` and `BimonthWidget`); a personal Apple ID works.
+   ```bash
+   cd path/to/bimonth
+   xcodegen generate
+   open Bimonth.xcodeproj
+   ```
+
+3. On first launch, Xcode prompts for a Development Team for both targets (`Bimonth` and `BimonthWidget`); a personal Apple ID works.
 
 ## Running the widget
 
@@ -67,3 +72,11 @@ bimonth/
 └── BimonthTests/
     └── MonthResolverTests.swift    # Edge-case coverage for MonthResolver
 ```
+
+## Contributing
+
+Issues and pull requests are welcome. Please read [`docs/spec.md`](docs/spec.md) first so changes stay aligned with the design intent.
+
+## License
+
+[MIT](LICENSE) © Hana Chang

@@ -1,6 +1,6 @@
 name: Bimonth
 options:
-  bundleIdPrefix: tw.hanamizuki
+  bundleIdPrefix: com.example
   deploymentTarget:
     macOS: "14.0"
   developmentLanguage: en
@@ -22,7 +22,7 @@ targets:
       - path: Bimonth
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: tw.hanamizuki.bimonth
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth
         PRODUCT_NAME: Bimonth
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.utilities"
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
@@ -43,7 +43,7 @@ targets:
       - path: BimonthWidget
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: tw.hanamizuki.bimonth.widget
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth.widget
         PRODUCT_NAME: BimonthWidget
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: BimonthWidget/Info.plist
@@ -58,4 +58,4 @@ targets:
       - path: BimonthWidget/Logic/MonthResolver.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: tw.hanamizuki.bimonth.Tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth.Tests
