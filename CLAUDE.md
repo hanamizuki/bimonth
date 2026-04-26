@@ -40,6 +40,27 @@ Setting `ENABLE_DEBUG_DYLIB: NO` forces a monolithic binary that chronod
 loads cleanly. `ENABLE_PREVIEWS: YES` is independent and can stay on for
 SwiftUI Previews in the Xcode IDE.
 
+## Xcode skips the widget target on incremental builds
+
+When you change only files in the `Bimonth` target (e.g. `ContentView.swift`,
+`BimonthApp.swift`) and run `xcodebuild`, Xcode's incremental linker may
+**not** rebuild the `BimonthWidget` extension — it concludes nothing the
+widget depends on changed. The container app gets your edits, the desktop
+widget keeps running yesterday's binary, and the file timestamp on the
+`.appex` is misleading (codesign rewrites it without recompiling).
+
+If a widget edit doesn't appear after rebuild, before chasing snapshot
+caches, force a clean build:
+
+```bash
+rm -rf ~/Library/Developer/Xcode/DerivedData/Bimonth-*
+xcodegen generate
+xcodebuild -project Bimonth.xcodeproj -scheme Bimonth \
+  -configuration Debug -destination 'platform=macOS' build
+```
+
+Then continue with the reload workflow below.
+
 ## Widget reload workflow during development
 
 Even with the binary loading correctly, widgets are aggressively cached. After
