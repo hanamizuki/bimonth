@@ -67,7 +67,7 @@ Even with the binary loading correctly, widgets are aggressively cached. After
 a build, force a reload:
 
 ```bash
-APPEX="/Users/Hana/Library/Developer/Xcode/DerivedData/Bimonth-*/Build/Products/Debug/Bimonth.app/Contents/PlugIns/BimonthWidget.appex"
+APPEX="$HOME/Library/Developer/Xcode/DerivedData/Bimonth-*/Build/Products/Debug/Bimonth.app/Contents/PlugIns/BimonthWidget.appex"
 pluginkit -r $APPEX
 pluginkit -a $APPEX
 killall BimonthWidget chronod 2>/dev/null
