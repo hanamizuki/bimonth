@@ -2,7 +2,7 @@
 
 A macOS desktop bimonthly-calendar widget. Shows two months side by side and shifts the displayed range based on the current date so you can see both "the recent past" and "the upcoming future" at a glance.
 
-![Bimonth widget showing April and May side by side](docs/screenshot.png)
+![Bimonth container app — vintage tear-off calendar icon above a live two-month preview (April and May with today highlighted) and instructions for adding the widget to the desktop](docs/screenshot.png)
 
 Full spec: [`docs/spec.md`](docs/spec.md).
 
