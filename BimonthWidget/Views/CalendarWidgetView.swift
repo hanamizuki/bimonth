@@ -9,8 +9,11 @@ struct CalendarWidgetView: View {
 
     /// Width of the strip reserved on each side for a navigation button. The
     /// months are inset by the same amount, so the buttons live entirely in
-    /// the gutters and never cover a day cell.
-    static let navigationGutter: CGFloat = 18
+    /// the gutters and never cover a day cell. The chevron aligns to the outer
+    /// edge of this strip (see `alignment` in MonthNavigationButton), so it
+    /// hugs the widget border while the gutter-minus-glyph remainder stays as
+    /// breathing room to the grid.
+    static let navigationGutter: CGFloat = 14
 
     var body: some View {
         let (leading, trailing) = MonthResolver.monthsToDisplay(
@@ -37,14 +40,16 @@ struct CalendarWidgetView: View {
             MonthNavigationButton(
                 delta: -1,
                 systemName: "chevron.left",
-                accessibilityLabel: "Show previous month"
+                accessibilityLabel: "Show previous month",
+                alignment: .leading
             )
         }
         .overlay(alignment: .trailing) {
             MonthNavigationButton(
                 delta: 1,
                 systemName: "chevron.right",
-                accessibilityLabel: "Show next month"
+                accessibilityLabel: "Show next month",
+                alignment: .trailing
             )
         }
     }
@@ -54,6 +59,10 @@ private struct MonthNavigationButton: View {
     let delta: Int
     let systemName: String
     let accessibilityLabel: LocalizedStringKey
+    /// Which edge of the gutter the chevron hugs: `.leading` for the previous
+    /// button, `.trailing` for the next. The tap target still spans the whole
+    /// gutter — only the glyph shifts outward.
+    let alignment: Alignment
 
     var body: some View {
         Button(intent: ChangeMonthOffsetIntent(delta: delta)) {
@@ -61,8 +70,9 @@ private struct MonthNavigationButton: View {
                 .font(.system(size: 10, weight: .semibold))
                 .foregroundStyle(Color.secondary)
                 // Full-height gutter-wide strip: a generous tap target that
-                // still cannot overlap the inset month grids.
-                .frame(width: CalendarWidgetView.navigationGutter)
+                // still cannot overlap the inset month grids. The glyph aligns
+                // to the outer edge so it sits closer to the widget border.
+                .frame(width: CalendarWidgetView.navigationGutter, alignment: alignment)
                 .frame(maxHeight: .infinity)
                 .contentShape(Rectangle())
                 .accessibilityHidden(true)
