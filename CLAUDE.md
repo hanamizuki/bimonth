@@ -108,6 +108,24 @@ not change without a migration plan.)
 settings (the widget's `Info.plist` substitutes via `$(...)`). Keep them in
 sync to avoid the `embeddedBinaryValidationUtility` warning at build time.
 
+**Bump `CURRENT_PROJECT_VERSION` whenever the widget's code or behavior
+changes** — not just for public releases. `chronod` keys its widget descriptor
+cache (`ExtensionMetadata` in `chrono.sql`) on the extension's
+`CFBundleVersion`. If the version is unchanged, chronod treats the widget as
+identical and never re-ingests the descriptor, so an already-installed machine
+keeps rendering the old snapshot and old configuration surface — no amount of
+rebuilding, `pluginkit` re-registration, or removing/re-adding the widget
+helps. This bit us twice (the `StaticConfiguration` → `AppIntentConfiguration`
+switch, then the navigation-button layout fix): both shipped with the version
+left at `1` and were invisible on installed widgets until the version was
+bumped. Verify with:
+
+```bash
+DB="$HOME/Library/Group Containers/group.com.apple.chronod/chronod/chrono.sql"
+sqlite3 "file:$DB?mode=ro" "SELECT bundleIdentifier, version FROM ExtensionMetadata;"
+# the version column reads like "2-2-(…)"; the leading number is CFBundleVersion.
+```
+
 ## Brand palette is shared across both targets
 
 `Shared/Colors.swift` is included by both the container app and the widget
