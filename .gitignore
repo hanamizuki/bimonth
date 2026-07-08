@@ -28,3 +28,10 @@ Carthage/Build/
 
 # Local AI design context (private; DESIGN.md is the public source of truth)
 .impeccable.md
+
+# Local signing overrides — personal bundle prefix + team id. Never commit.
+Config/Signing.local.xcconfig
+
+# App Store distribution artifacts
+*.xcarchive
+*.pkg
