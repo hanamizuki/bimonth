@@ -8,7 +8,7 @@ struct CalendarWidgetView: View {
     @Environment(\.calendar) private var calendar
     @Environment(\.widgetContentMargins) private var margins
 
-    static let navigationGutter: CGFloat = 14
+    static let navigationGutter: CGFloat = 6
     /// Target distance from the chevron glyph to the widget's rounded-rect edge.
     private static let chevronEdgeInset: CGFloat = 8
 
