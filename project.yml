@@ -40,10 +40,6 @@ targets:
       # BimonthWidget/; the duplication is module-scoped only.
       - path: BimonthWidget/Views/MonthView.swift
       - path: BimonthWidget/Views/DayCell.swift
-      - path: BimonthWidget/Configuration/BimonthConfigurationIntent.swift
-      - path: BimonthWidget/Intents/ChangeMonthOffsetIntent.swift
-      - path: BimonthWidget/Logic/BimonthWidgetConstants.swift
-      - path: BimonthWidget/Logic/MonthNavigationStore.swift
       - path: BimonthWidget/Logic/MonthResolver.swift
     settings:
       base:
@@ -82,6 +78,7 @@ targets:
     sources:
       - path: BimonthTests
       - path: BimonthWidget/Logic/MonthResolver.swift
+      - path: BimonthWidget/Logic/MonthNavigationStore.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth.Tests

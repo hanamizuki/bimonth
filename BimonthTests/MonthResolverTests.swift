@@ -154,6 +154,18 @@ struct MonthResolverTests {
         #expect(result.trailing == monthStart(2027, 2))
     }
 
+    @Test("custom switch day resolves before month offset is applied")
+    func customSwitchDayAndMonthOffsetApplyInOrder() {
+        let result = MonthResolver.monthsToDisplay(
+            for: date(2026, 4, 14),
+            calendar: calendar,
+            switchDay: 15,
+            monthOffset: -1
+        )
+        #expect(result.leading == monthStart(2026, 2))
+        #expect(result.trailing == monthStart(2026, 3))
+    }
+
     // MARK: - DST / leap-year / non-Gregorian (spec §5.3, §5.4)
 
     @Test("DST boundary month (US Pacific, mid-March 2026) — month boundaries still correct")

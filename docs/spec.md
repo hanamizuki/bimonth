@@ -66,7 +66,8 @@ The widget has left and right chevron buttons:
 The offset is applied after the automatic range is resolved. For example, on a
 date that resolves to April + May, tapping the right chevron once shows May +
 June. The offset is shared across all installed Bimonth widget instances; the
-Edit Widget switch day remains per widget instance.
+Edit Widget switch day remains per widget instance. The shared offset is bounded
+to 24 months backward or forward from the automatic range.
 
 ### 2.4 Auto-update
 
@@ -117,7 +118,7 @@ widget's `BimonthConfigurationIntent` values.
 
 - Outer corner radius: WidgetKit default (`.containerBackground`)
 - Outer padding: handled by `.containerBackground` — no extra padding
-- Left/right chevron button width: 16pt
+- Left/right chevron icon width: 16pt; button hit area width: 24pt
 - Spacing between chevrons and month content: 6pt
 - Spacing between the two months: 12pt
 
@@ -183,8 +184,11 @@ Use `calendar.date(byAdding: .day, value:)` instead of adding/subtracting second
 - custom `switchDay=15`: `2026-04-14` → `(2026-03, 2026-04)`
 - custom `switchDay=15`: `2026-04-15` → `(2026-04, 2026-05)`
 - `switchDay=31` in February clamps to the last day of February
+- custom `switchDay=15` + `monthOffset=-1` resolves the switch-day range first,
+  then shifts the pair backward
 - `monthOffset=-1` shifts the resolved pair one month backward
 - `monthOffset=+2` shifts the resolved pair two months forward
+- month navigation offset clamps to the supported -24...24 range
 - `2026-01-03` (day=3) → `(2025-12, 2026-01)`
 - `2025-12-15` (day=15) → `(2025-12, 2026-01)`
 - Month-end `2026-04-30` → `(2026-04, 2026-05)`

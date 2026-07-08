@@ -43,7 +43,8 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.full}"
   navigation-button:
-    width: 16px
+    iconWidth: 16px
+    hitAreaWidth: 24px
     textColor: system-secondary
 ---
 
@@ -206,10 +207,10 @@ nothing else should be invented without revisiting the brand principles.
   circle (full radius). Digit: `ink` (≈ 7.6:1 contrast on sage). Same 17×17pt
   size, same 10pt medium weight. Today is signaled by **color and shape**,
   never by font weight or size.
-- **`navigation-button`** — left/right SF Symbol chevrons. 16pt wide, no
-  background, no border, no fill, system `.secondary` foreground. The buttons
-  are functional controls, not decorative accents, so they do not spend the
-  widget's single sage emphasis.
+- **`navigation-button`** — left/right SF Symbol chevrons. 16pt visual icon
+  inside a 24pt hit area, no background, no border, no fill, system `.secondary`
+  foreground. The buttons are functional controls, not decorative accents, so
+  they do not spend the widget's single sage emphasis.
 
 The container app (`ContentView`) deliberately has no branded components —
 just an SF Symbol calendar icon (48pt, in `bark`) and two system-styled text

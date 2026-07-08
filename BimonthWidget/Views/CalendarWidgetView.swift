@@ -47,8 +47,10 @@ private struct MonthNavigationButton: View {
                 .font(.system(size: 10, weight: .semibold))
                 .foregroundStyle(Color.secondary)
                 .frame(width: 16)
+                .frame(width: 24)
                 .frame(maxHeight: .infinity)
                 .contentShape(Rectangle())
+                .accessibilityHidden(true)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(accessibilityLabel)
