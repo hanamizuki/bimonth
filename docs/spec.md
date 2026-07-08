@@ -118,9 +118,10 @@ widget's `BimonthConfigurationIntent` values.
 
 - Outer corner radius: WidgetKit default (`.containerBackground`)
 - Outer padding: handled by `.containerBackground` — no extra padding
-- Left/right chevron icon width: 16pt; button hit area width: 24pt
-- Spacing between chevrons and month content: 6pt
-- Spacing between the two months: 12pt
+- Left/right navigation gutters: 18pt each, with the chevron buttons overlaid
+  on them (buttons never participate in the month content's width negotiation)
+- Chevron button hit area: full gutter width × full content height
+- Spacing between the two months: 16pt
 
 ### 4.2 Typography
 
