@@ -76,6 +76,96 @@ struct MonthResolverTests {
         #expect(result.trailing == monthStart(2026, 1))
     }
 
+    // MARK: - Configurable switch day
+
+    @Test("custom switch day 15: day 14 → previous + current")
+    func customSwitchDayBeforeThreshold() {
+        let result = MonthResolver.monthsToDisplay(
+            for: date(2026, 4, 14),
+            calendar: calendar,
+            switchDay: 15
+        )
+        #expect(result.leading == monthStart(2026, 3))
+        #expect(result.trailing == monthStart(2026, 4))
+    }
+
+    @Test("custom switch day 15: day 15 → current + next")
+    func customSwitchDayOnThreshold() {
+        let result = MonthResolver.monthsToDisplay(
+            for: date(2026, 4, 15),
+            calendar: calendar,
+            switchDay: 15
+        )
+        #expect(result.leading == monthStart(2026, 4))
+        #expect(result.trailing == monthStart(2026, 5))
+    }
+
+    @Test("switch day 1 always shows current + next")
+    func switchDayOneShowsCurrentAndNext() {
+        let result = MonthResolver.monthsToDisplay(
+            for: date(2026, 4, 1),
+            calendar: calendar,
+            switchDay: 1
+        )
+        #expect(result.leading == monthStart(2026, 4))
+        #expect(result.trailing == monthStart(2026, 5))
+    }
+
+    @Test("switch day 31 clamps to February 28 in a non-leap year")
+    func switchDayClampsToLastDayOfShortMonth() {
+        let beforeLastDay = MonthResolver.monthsToDisplay(
+            for: date(2026, 2, 27),
+            calendar: calendar,
+            switchDay: 31
+        )
+        #expect(beforeLastDay.leading == monthStart(2026, 1))
+        #expect(beforeLastDay.trailing == monthStart(2026, 2))
+
+        let lastDay = MonthResolver.monthsToDisplay(
+            for: date(2026, 2, 28),
+            calendar: calendar,
+            switchDay: 31
+        )
+        #expect(lastDay.leading == monthStart(2026, 2))
+        #expect(lastDay.trailing == monthStart(2026, 3))
+    }
+
+    // MARK: - Manual month navigation
+
+    @Test("month offset -1 moves the resolved pair back one month")
+    func negativeMonthOffsetMovesPairBackward() {
+        let result = MonthResolver.monthsToDisplay(
+            for: date(2026, 4, 15),
+            calendar: calendar,
+            monthOffset: -1
+        )
+        #expect(result.leading == monthStart(2026, 3))
+        #expect(result.trailing == monthStart(2026, 4))
+    }
+
+    @Test("month offset +2 moves the resolved pair forward two months")
+    func positiveMonthOffsetMovesPairForward() {
+        let result = MonthResolver.monthsToDisplay(
+            for: date(2026, 11, 15),
+            calendar: calendar,
+            monthOffset: 2
+        )
+        #expect(result.leading == monthStart(2027, 1))
+        #expect(result.trailing == monthStart(2027, 2))
+    }
+
+    @Test("custom switch day resolves before month offset is applied")
+    func customSwitchDayAndMonthOffsetApplyInOrder() {
+        let result = MonthResolver.monthsToDisplay(
+            for: date(2026, 4, 14),
+            calendar: calendar,
+            switchDay: 15,
+            monthOffset: -1
+        )
+        #expect(result.leading == monthStart(2026, 2))
+        #expect(result.trailing == monthStart(2026, 3))
+    }
+
     // MARK: - DST / leap-year / non-Gregorian (spec §5.3, §5.4)
 
     @Test("DST boundary month (US Pacific, mid-March 2026) — month boundaries still correct")

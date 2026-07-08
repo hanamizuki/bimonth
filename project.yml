@@ -78,6 +78,7 @@ targets:
     sources:
       - path: BimonthTests
       - path: BimonthWidget/Logic/MonthResolver.swift
+      - path: BimonthWidget/Logic/MonthNavigationStore.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth.Tests

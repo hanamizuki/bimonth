@@ -42,6 +42,10 @@ components:
     backgroundColor: "{colors.sage}"
     textColor: "{colors.ink}"
     rounded: "{rounded.full}"
+  navigation-button:
+    iconWidth: 16px
+    hitAreaWidth: 24px
+    textColor: system-secondary
 ---
 
 > **Unit convention.** All dimensions in this document are SwiftUI **points (pt)**.
@@ -132,8 +136,10 @@ plain native macOS view, not as a branded surface.
 
 ## Layout
 
-Two months render **side by side** in an `HStack` with **16pt** between them.
-Each month is a `VStack` of: month title → weekday header row → 6 × 7 day grid.
+Two months render **side by side** between slim previous/next chevron buttons.
+The outer row is: left chevron -> two-month content -> right chevron. The
+month content uses an `HStack` with **12pt** between the months. Each month is
+a `VStack` of: month title → weekday header row → 6 × 7 day grid.
 The grid is one `LazyVGrid` (header and dates share columns) so column widths
 are guaranteed identical between the header and the date rows.
 
@@ -142,7 +148,7 @@ are guaranteed identical between the header and the date rows.
 - `xs` (3pt) — grid row spacing; gap between title and grid; title bottom padding.
 - `sm` (6pt) — title leading padding (visually aligns title with two-digit day
   numbers in the first column).
-- `md` (16pt) — between the two month columns; container-app `VStack` spacing.
+- `md` (16pt) — container-app `VStack` spacing and other non-widget preview gaps.
 - `lg` (32pt) — container-app horizontal padding.
 
 Grid math: `firstWeekday` rotates the weekday-header letters and offsets the
@@ -184,7 +190,7 @@ a deliberate accent, not as decoration.
 
 ## Components
 
-The widget has only four atom-level components. Every variant is documented;
+The widget has five atom-level components. Every variant is documented;
 nothing else should be invented without revisiting the brand principles.
 
 - **`month-title`** — uppercase month name. Bark on widget background. Bold 9pt.
@@ -201,6 +207,10 @@ nothing else should be invented without revisiting the brand principles.
   circle (full radius). Digit: `ink` (≈ 7.6:1 contrast on sage). Same 17×17pt
   size, same 10pt medium weight. Today is signaled by **color and shape**,
   never by font weight or size.
+- **`navigation-button`** — left/right SF Symbol chevrons. 16pt visual icon
+  inside a 24pt hit area, no background, no border, no fill, system `.secondary`
+  foreground. The buttons are functional controls, not decorative accents, so
+  they do not spend the widget's single sage emphasis.
 
 The container app (`ContentView`) deliberately has no branded components —
 just an SF Symbol calendar icon (48pt, in `bark`) and two system-styled text

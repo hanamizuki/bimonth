@@ -3,10 +3,10 @@ import WidgetKit
 import SwiftUI
 
 struct BimonthWidget: Widget {
-    let kind: String = "BimonthWidget"
+    let kind: String = BimonthWidgetConstants.kind
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
+        AppIntentConfiguration(kind: kind, intent: BimonthConfigurationIntent.self, provider: Provider()) { entry in
             CalendarWidgetView(entry: entry)
                 .containerBackground(.background, for: .widget)
         }
