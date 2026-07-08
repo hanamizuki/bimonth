@@ -89,11 +89,17 @@ bimonth/
 ├── BimonthWidget/                  # Widget extension (the widget itself)
 │   ├── BimonthWidgetBundle.swift   # @main WidgetBundle
 │   ├── BimonthWidget.swift         # Widget configuration
-│   ├── Provider.swift              # TimelineProvider
+│   ├── Provider.swift              # AppIntentTimelineProvider
 │   ├── CalendarEntry.swift         # TimelineEntry model
 │   ├── Info.plist
 │   ├── BimonthWidget.entitlements
+│   ├── Configuration/
+│   │   └── BimonthConfigurationIntent.swift
+│   ├── Intents/
+│   │   └── ChangeMonthOffsetIntent.swift
 │   ├── Logic/
+│   │   ├── BimonthWidgetConstants.swift
+│   │   ├── MonthNavigationStore.swift
 │   │   └── MonthResolver.swift     # Pure function deciding which two months to show
 │   ├── Views/
 │   │   ├── CalendarWidgetView.swift

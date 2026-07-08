@@ -2,12 +2,16 @@
 
 ## 1. Overview
 
-A clean calendar widget for the macOS desktop and Notification Center showing two months side by side. The displayed range shifts automatically with the current date, so users see both "the recent past" and "the upcoming future" without manual switching.
+A clean calendar widget for the macOS desktop and Notification Center showing
+two months side by side. The displayed range shifts automatically with the
+current date and configured switch day, while chevron controls let users browse
+nearby months manually.
 
 ### 1.1 Goals
 
 - See the date layout for the two surrounding months at a glance
-- Auto-shift the visible range based on date — no manual switching
+- Auto-shift the visible range based on a configurable switch day
+- Let users manually browse the previous or next displayed month pair from the widget
 - Visually clean, consistent with the macOS native style
 - Light/dark mode support
 
@@ -16,7 +20,7 @@ A clean calendar widget for the macOS desktop and Notification Center showing tw
 - Calendar events, reminders, period markers, or other dot indicators
 - Week or year views
 - Tap-to-open a date in the system Calendar app
-- User settings (first-day-of-week, theme color, etc.)
+- Full settings beyond the month switch day (theme color, custom calendar system, etc.)
 
 ## 2. Functional spec
 
@@ -29,45 +33,83 @@ Two months rendered side by side. Each month contains:
 - Day grid (6 rows × 7 cols = 42 cells)
   - In-month weekdays render in the primary text color; in-month weekends in the secondary color
   - Out-of-month leading/trailing cells render blank (no number) but keep their slot for grid alignment, matching the system Calendar widget
-  - Today renders with a solid red circle background and white digit
+  - Today renders with a solid sage circle background and high-contrast digit
+- Previous/next chevron buttons sit at the widget's left and right edges and
+  shift the displayed pair by one month backward or forward.
 
 ### 2.2 Display range switching
 
-Decided by today's day-of-month (`day` is 1–31):
+Decided by today's day-of-month (`day` is 1–31) and the widget's configured
+`switchDay`. `switchDay` is configurable from Edit Widget, defaults to 7, and
+accepts values 1–31. If the configured day does not exist in the current month
+(for example 31 in February), the effective switch day is clamped to that
+month's last day.
 
-| Condition          | Left month | Right month |
-|--------------------|------------|-------------|
-| `day < 7` (1–6)    | Previous   | Current     |
-| `day >= 7` (7–31)  | Current    | Next        |
+| Condition            | Left month | Right month |
+|----------------------|------------|-------------|
+| `day < switchDay`    | Previous   | Current     |
+| `day >= switchDay`   | Current    | Next        |
 
-**Switch day:** the 7th flips to "current + next." On the 7th, more than three weeks of the current month still lie ahead, so showing the next month is more useful.
+**Default switch day:** the 7th flips to "current + next." On the 7th, more
+than three weeks of the current month still lie ahead, so showing the next
+month is more useful.
 
-### 2.3 Auto-update
+### 2.3 Manual month navigation
+
+The widget has left and right chevron buttons:
+
+| Button | Behavior |
+|--------|----------|
+| Left chevron | Decrease the shared month offset by 1 |
+| Right chevron | Increase the shared month offset by 1 |
+
+The offset is applied after the automatic range is resolved. For example, on a
+date that resolves to April + May, tapping the right chevron once shows May +
+June. The offset is shared across all installed Bimonth widget instances; the
+Edit Widget switch day remains per widget instance.
+
+### 2.4 Auto-update
 
 The widget needs to refresh at:
 
 - Daily 00:00 — the today highlight moves to the new date
-- Switch day (7th of each month) 00:00 — switch from "previous + current" to "current + next"
+- Configured switch day 00:00 — switch from "previous + current" to "current + next"
 - 1st of each month 00:00 — within "current + next," the current month becomes the new month
+- Any manual chevron tap — the App Intent updates the shared month offset and
+  requests a widget timeline reload
 
-Implementation: each `getTimeline` call generates 7 entries (one per day at midnight) with `policy = .atEnd`; the system schedules them automatically.
+Implementation: each `timeline(for:in:)` call generates 7 entries (one per day
+at midnight) with `policy = .atEnd`; the system schedules them automatically.
 
 ## 3. Technical spec
 
 ### 3.1 Stack
 
 - **Language:** Swift
-- **Frameworks:** WidgetKit + SwiftUI
+- **Frameworks:** WidgetKit + SwiftUI + App Intents
 - **Minimum OS:** macOS 14 (Sonoma)
 - **Widget size:** `.systemMedium` only
 
 ### 3.2 Display range switching logic
 
 See `BimonthWidget/Logic/MonthResolver.swift`. Pure function, easy to unit-test.
+The resolver accepts `switchDay` and `monthOffset`, clamps impossible switch
+days to the current month's last day, and keeps the resulting months adjacent.
 
 ### 3.3 Timeline strategy
 
-`Provider.getTimeline` produces 7 entries (one per day at 00:00) with `policy = .atEnd`. The system requests a fresh timeline after the last entry.
+`Provider.timeline(for:in:)` produces 7 entries (one per day at 00:00) with
+`policy = .atEnd`. The system requests a fresh timeline after the last entry.
+The provider is an `AppIntentTimelineProvider`, so each entry receives the
+widget's `BimonthConfigurationIntent` values.
+
+### 3.4 Widget configuration and interaction
+
+- `BimonthConfigurationIntent` powers Edit Widget and stores the per-instance
+  switch day.
+- `ChangeMonthOffsetIntent` powers the left/right chevron buttons.
+- `MonthNavigationStore` stores one shared month offset for the Bimonth widget
+  kind using the widget extension's defaults.
 
 ## 4. Visual design
 
@@ -75,7 +117,9 @@ See `BimonthWidget/Logic/MonthResolver.swift`. Pure function, easy to unit-test.
 
 - Outer corner radius: WidgetKit default (`.containerBackground`)
 - Outer padding: handled by `.containerBackground` — no extra padding
-- Spacing between the two months: 16pt
+- Left/right chevron button width: 16pt
+- Spacing between chevrons and month content: 6pt
+- Spacing between the two months: 12pt
 
 ### 4.2 Typography
 
@@ -113,8 +157,8 @@ Follows `Calendar.current.firstWeekday`. Defaults vary by region: Sunday (1) in 
 
 ### 5.1 Year crossover
 
-- After Dec 7: show December + January of next year
-- Jan 1–6: show December of last year + January
+- After the effective switch day in December: show December + January of next year
+- Before the effective switch day in January: show December of last year + January
 
 The month title doesn't show the year (matches the system Calendar widget). When months span a year boundary, the order distinguishes them (left = earlier month). Month names are produced via `DateFormatter` with locale-appropriate formatting — never hard-coded.
 
@@ -136,6 +180,11 @@ Use `calendar.date(byAdding: .day, value:)` instead of adding/subtracting second
 
 - `2026-04-06` (day=6) → `(2026-03, 2026-04)`
 - `2026-04-07` (day=7) → `(2026-04, 2026-05)`
+- custom `switchDay=15`: `2026-04-14` → `(2026-03, 2026-04)`
+- custom `switchDay=15`: `2026-04-15` → `(2026-04, 2026-05)`
+- `switchDay=31` in February clamps to the last day of February
+- `monthOffset=-1` shifts the resolved pair one month backward
+- `monthOffset=+2` shifts the resolved pair two months forward
 - `2026-01-03` (day=3) → `(2025-12, 2026-01)`
 - `2025-12-15` (day=15) → `(2025-12, 2026-01)`
 - Month-end `2026-04-30` → `(2026-04, 2026-05)`
@@ -145,6 +194,7 @@ Use `calendar.date(byAdding: .day, value:)` instead of adding/subtracting second
 - Today highlight lands on the correct cell
 - Out-of-month days render blank (no digit)
 - Year-crossover months render in the correct left-to-right order (year is not shown, but order must be right)
+- Chevron buttons appear at the left/right edges without overlapping day cells
 - Light/dark mode switching
 - Different first-day-of-week settings
 
