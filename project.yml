@@ -24,8 +24,12 @@ settings:
     # and the widget extension's Info.plist (via $(CURRENT_PROJECT_VERSION) /
     # $(MARKETING_VERSION) substitution) stay in sync. Mismatched versions
     # trigger an embeddedBinaryValidationUtility warning at build time.
-    CURRENT_PROJECT_VERSION: "1"
-    MARKETING_VERSION: "0.0.1"
+    # Bump CURRENT_PROJECT_VERSION on ANY widget change: chronod caches the
+    # widget descriptor keyed by CFBundleVersion, so already-installed machines
+    # keep serving the old descriptor/snapshot until the version changes. See
+    # CLAUDE.md "Versioning".
+    CURRENT_PROJECT_VERSION: "2"
+    MARKETING_VERSION: "0.0.2"
 
 targets:
   Bimonth:
