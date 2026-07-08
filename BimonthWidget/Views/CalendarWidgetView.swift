@@ -6,14 +6,11 @@ import WidgetKit
 struct CalendarWidgetView: View {
     let entry: CalendarEntry
     @Environment(\.calendar) private var calendar
+    @Environment(\.widgetContentMargins) private var margins
 
-    /// Width of the strip reserved on each side for a navigation button. The
-    /// months are inset by the same amount, so the buttons live entirely in
-    /// the gutters and never cover a day cell. The chevron aligns to the outer
-    /// edge of this strip (see `alignment` in MonthNavigationButton), so it
-    /// hugs the widget border while the gutter-minus-glyph remainder stays as
-    /// breathing room to the grid.
     static let navigationGutter: CGFloat = 14
+    /// Target distance from the chevron glyph to the widget's rounded-rect edge.
+    private static let chevronEdgeInset: CGFloat = 8
 
     var body: some View {
         let (leading, trailing) = MonthResolver.monthsToDisplay(
@@ -36,6 +33,9 @@ struct CalendarWidgetView: View {
             MonthView(monthStart: trailing, today: entry.date)
         }
         .padding(.horizontal, Self.navigationGutter)
+        // Push chevrons into the system content margin so they sit ~8pt from
+        // the widget border. widgetContentMargins is .zero in the picker
+        // preview, so the offset becomes a no-op there (safe).
         .overlay(alignment: .leading) {
             MonthNavigationButton(
                 delta: -1,
@@ -43,6 +43,7 @@ struct CalendarWidgetView: View {
                 accessibilityLabel: "Show previous month",
                 alignment: .leading
             )
+            .offset(x: -(margins.leading - Self.chevronEdgeInset))
         }
         .overlay(alignment: .trailing) {
             MonthNavigationButton(
@@ -51,6 +52,7 @@ struct CalendarWidgetView: View {
                 accessibilityLabel: "Show next month",
                 alignment: .trailing
             )
+            .offset(x: margins.trailing - Self.chevronEdgeInset)
         }
     }
 }
@@ -59,19 +61,13 @@ private struct MonthNavigationButton: View {
     let delta: Int
     let systemName: String
     let accessibilityLabel: LocalizedStringKey
-    /// Which edge of the gutter the chevron hugs: `.leading` for the previous
-    /// button, `.trailing` for the next. The tap target still spans the whole
-    /// gutter — only the glyph shifts outward.
     let alignment: Alignment
 
     var body: some View {
         Button(intent: ChangeMonthOffsetIntent(delta: delta)) {
             Image(systemName: systemName)
                 .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(Color.secondary)
-                // Full-height gutter-wide strip: a generous tap target that
-                // still cannot overlap the inset month grids. The glyph aligns
-                // to the outer edge so it sits closer to the widget border.
+                .foregroundStyle(Color.secondary.opacity(0.35))
                 .frame(width: CalendarWidgetView.navigationGutter, alignment: alignment)
                 .frame(maxHeight: .infinity)
                 .contentShape(Rectangle())
