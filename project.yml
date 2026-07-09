@@ -31,6 +31,14 @@ settings:
     CURRENT_PROJECT_VERSION: "2"
     MARKETING_VERSION: "0.0.2"
 
+# Per-configuration xcconfig supplying BIMONTH_BUNDLE_PREFIX and DEVELOPMENT_TEAM.
+# Template defaults (com.example / empty team) live in Config/Signing.xcconfig;
+# personal App Store distribution values go in the gitignored
+# Config/Signing.local.xcconfig. See README "First-time setup".
+configFiles:
+  Debug: Config/Signing.xcconfig
+  Release: Config/Signing.xcconfig
+
 targets:
   Bimonth:
     type: application
@@ -47,7 +55,7 @@ targets:
       - path: BimonthWidget/Logic/MonthResolver.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth
+        PRODUCT_BUNDLE_IDENTIFIER: $(BIMONTH_BUNDLE_PREFIX).bimonth
         PRODUCT_NAME: Bimonth
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.utilities"
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
@@ -69,7 +77,7 @@ targets:
       - path: Shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth.widget
+        PRODUCT_BUNDLE_IDENTIFIER: $(BIMONTH_BUNDLE_PREFIX).bimonth.widget
         PRODUCT_NAME: BimonthWidget
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: BimonthWidget/Info.plist
@@ -85,4 +93,4 @@ targets:
       - path: BimonthWidget/Logic/MonthNavigationStore.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.bimonth.Tests
+        PRODUCT_BUNDLE_IDENTIFIER: $(BIMONTH_BUNDLE_PREFIX).bimonth.Tests

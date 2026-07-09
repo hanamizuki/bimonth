@@ -25,7 +25,13 @@ Widget; values 1-31 are supported, and short months clamp to their last day.
 
 ## First-time setup
 
-1. Edit `project.yml` and replace every occurrence of `com.example` with your own reverse-DNS prefix (the `bundleIdPrefix` plus the three `PRODUCT_BUNDLE_IDENTIFIER` values), so Xcode can sign the targets against your Apple ID.
+1. Set your own bundle ID prefix. Every target's bundle identifier is composed from a `BIMONTH_BUNDLE_PREFIX` build setting that defaults to `com.example` (in `Config/Signing.xcconfig`). Create a gitignored `Config/Signing.local.xcconfig` to override it with your own reverse-DNS prefix, so Xcode signs the targets against your Apple ID:
+
+   ```
+   BIMONTH_BUNDLE_PREFIX = com.yourname
+   ```
+
+   You can also add `DEVELOPMENT_TEAM = YOURTEAMID` there; otherwise Xcode's automatic signing uses your personal team.
 2. Generate the Xcode project and open it:
 
    ```bash
@@ -52,9 +58,9 @@ is at https://github.com/hanamizuki/bimonth.
 3. Confirm Xcode 16+ is installed (`xcodebuild -version`). If not,
    stop and tell me to install it from the Mac App Store.
 4. Install `xcodegen` if it's missing (`brew install xcodegen`).
-5. Ask me for a reverse-DNS bundle prefix (e.g. `com.alice.bimonth`)
-   and replace every occurrence of `com.example` in `project.yml`
-   with it.
+5. Ask me for a reverse-DNS bundle prefix (e.g. `com.alice`) and
+   create `Config/Signing.local.xcconfig` containing
+   `BIMONTH_BUNDLE_PREFIX = <that prefix>` (this file is gitignored).
 6. Run `xcodegen generate`.
 7. Build the Debug `Bimonth` scheme for macOS with `xcodebuild`.
 8. On a successful build, open the produced `Bimonth.app` and walk

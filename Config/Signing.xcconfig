@@ -1,0 +1,19 @@
+// Bimonth signing & identity configuration.
+//
+// These are TEMPLATE DEFAULTS. A fresh clone builds and signs against the
+// developer's own Apple ID using an example bundle identifier, exactly as the
+// README describes. To sign for your own distribution (e.g. the App Store),
+// create Config/Signing.local.xcconfig (gitignored) and override the values
+// there — never edit this file with personal identifiers.
+
+// Reverse-DNS prefix prepended to every target's bundle identifier.
+// project.yml composes the full ids as $(BIMONTH_BUNDLE_PREFIX).bimonth etc.
+BIMONTH_BUNDLE_PREFIX = com.example
+
+// Empty by default: automatic signing then picks the personal team of whatever
+// Apple ID is signed into Xcode. Override locally to sign under a paid team.
+DEVELOPMENT_TEAM =
+
+// Pull in local, gitignored overrides if the file exists. The trailing ? makes
+// the include optional, so a clone without the file still builds cleanly.
+#include? "Signing.local.xcconfig"
