@@ -4,19 +4,31 @@
 // Both targets — the container app (Bimonth) and the widget extension
 // (BimonthWidget) — link this file via `project.yml`.
 //
-// `brandBark` is the only token that visibly shifts between modes (warm
-// brown on light, lifted taupe on dark) and uses NSColor's dynamic-provider
-// API so the same `Color.brandBark` reference resolves correctly per system
-// appearance. Sage and parchment read in both modes; ink and stone are
-// reserved for surfaces where the system semantic colors don't suffice.
+// `brandBark` and `brandInk` shift between modes and use NSColor's
+// dynamic-provider API so the same `Color.brandX` reference resolves
+// correctly per system appearance. Sage and parchment read in both modes;
+// stone is reserved for surfaces where the system semantic colors don't
+// suffice.
 
 import AppKit
 import SwiftUI
 
 extension Color {
-    /// #161600 — primary text, deepest contrast (olive-black).
-    /// Used as the today digit on the sage circle (≈ 7.6:1 contrast, AAA).
-    static let brandInk = Color(red: 0x16 / 255.0, green: 0x16 / 255.0, blue: 0x00 / 255.0)
+    /// Light #161600 (olive-black) / Dark #EFE8D2 (warm cream).
+    /// Used as the today digit on the sage circle (light ≈ 7.6:1, AAA).
+    /// Dynamic per system appearance so the digit stays legible on both
+    /// light and dark widget backgrounds.
+    static let brandInk = Color(nsColor: NSColor(name: "brandInk") { appearance in
+        let isDark = appearance.bestMatch(from: [
+            .darkAqua,
+            .vibrantDark,
+            .accessibilityHighContrastDarkAqua,
+            .accessibilityHighContrastVibrantDark,
+        ]) != nil
+        return isDark
+            ? NSColor(srgbRed: 0xEF / 255.0, green: 0xE8 / 255.0, blue: 0xD2 / 255.0, alpha: 1)
+            : NSColor(srgbRed: 0x16 / 255.0, green: 0x16 / 255.0, blue: 0x00 / 255.0, alpha: 1)
+    })
 
     /// Light #585142 (warm brown) / Dark #B5AD99 (lifted taupe).
     /// Drives the widget's uppercase month title and the container app's icon.
