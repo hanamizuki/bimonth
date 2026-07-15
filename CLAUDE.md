@@ -130,6 +130,6 @@ sqlite3 "file:$DB?mode=ro" "SELECT bundleIdentifier, version FROM ExtensionMetad
 
 `Shared/Colors.swift` is included by both the container app and the widget
 extension via `project.yml` (`path: Shared` under each target's `sources`).
-`brandBark` uses `NSColor`'s `name:dynamicProvider:` API for light/dark
-adaptation; the rest are static. Source of truth for hex values is
+`brandBark` and `brandInk` use `NSColor`'s `name:dynamicProvider:` API for
+light/dark adaptation; the rest are static. Source of truth for hex values is
 [`DESIGN.md`](./DESIGN.md).

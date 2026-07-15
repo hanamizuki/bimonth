@@ -15,7 +15,7 @@ import SwiftUI
 
 extension Color {
     /// Light #161600 (olive-black) / Dark #EFE8D2 (warm cream).
-    /// Used as the today digit on the sage circle (≈ 7.6:1 contrast, AAA).
+    /// Used as the today digit on the sage circle (light ≈ 7.6:1, AAA).
     /// Dynamic per system appearance so the digit stays legible on both
     /// light and dark widget backgrounds.
     static let brandInk = Color(nsColor: NSColor(name: "brandInk") { appearance in

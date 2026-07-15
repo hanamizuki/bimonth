@@ -95,8 +95,8 @@ pure black.**
 ### Light & Dark
 
 Both modes are first-class. The YAML tokens above carry the **light** values.
-Dark variants are below; only `bark` actually shifts on a real used surface
-today, but all tokens declare both modes for future use:
+Dark variants are below; `bark` and `ink` shift on real used surfaces
+today; the rest declare both modes for future use:
 
 | Token | Light | Dark | Notes |
 |---|---|---|---|
