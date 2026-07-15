@@ -25,9 +25,11 @@ struct DayCell: View {
                             // in the palette, reserved for today's single point of emphasis.
                             // Accented rendering (macOS Clear/Tinted widget styles) discards
                             // custom hues and keeps only alpha, so a fully-opaque circle behind
-                            // a fully-opaque digit both collapse to solid white — invisible.
+                            // a fully-opaque digit both collapse to a solid tint — invisible.
                             // Lowering the circle's opacity there preserves a visible contrast
-                            // once color is stripped away.
+                            // once color is stripped away. Only .accented needs this on macOS;
+                            // .vibrant (iOS Lock Screen / StandBy) never occurs here and correctly
+                            // falls through to full opacity.
                             Circle().fill(Color.brandSage.opacity(renderingMode == .accented ? 0.3 : 1))
                         }
                     }
