@@ -2,12 +2,14 @@
 // (matching the system Calendar widget — no leading/trailing month fill); weekday vs weekend
 // differ by both weight and color opacity to emphasize weekdays.
 import SwiftUI
+import WidgetKit
 
 struct DayCell: View {
     let date: Date
     let isCurrentMonth: Bool
     let isToday: Bool
     @Environment(\.calendar) private var calendar
+    @Environment(\.widgetRenderingMode) private var renderingMode
 
     var body: some View {
         Group {
@@ -21,7 +23,12 @@ struct DayCell: View {
                         if isToday {
                             // Brand accent: muted sage green is the only chromatic color
                             // in the palette, reserved for today's single point of emphasis.
-                            Circle().fill(Color.brandSage)
+                            // Accented rendering (macOS Clear/Tinted widget styles) discards
+                            // custom hues and keeps only alpha, so a fully-opaque circle behind
+                            // a fully-opaque digit both collapse to solid white — invisible.
+                            // Lowering the circle's opacity there preserves a visible contrast
+                            // once color is stripped away.
+                            Circle().fill(Color.brandSage.opacity(renderingMode == .accented ? 0.3 : 1))
                         }
                     }
             } else {
