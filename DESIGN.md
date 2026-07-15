@@ -107,11 +107,11 @@ today, but all tokens declare both modes for future use:
 | `parchment` | `#EBDAB2` | `#EBDAB2` | Unchanged; today digit on sage works in both. |
 
 Implementation note: brand tokens live in a Swift `Color` extension.
-`brandBark` uses `NSColor`'s dynamic-provider API so the same `Color.brandBark`
-reference resolves to the warm brown on light and the lifted taupe on dark.
-The other tokens are static `Color` literals; their dark hexes above are
-documented for future reference (e.g. if `brandInk` ever appears on a dark
-surface), not currently wired.
+`brandBark` and `brandInk` use `NSColor`'s dynamic-provider API so
+`Color.brandBark` resolves to warm brown / lifted taupe and `Color.brandInk`
+resolves to olive-black / warm cream per system appearance. The remaining
+tokens (`stone`, `sage`, `parchment`) are static `Color` literals; their dark
+hexes above are documented for future reference, not currently wired.
 
 ## Typography
 

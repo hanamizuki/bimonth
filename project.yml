@@ -28,7 +28,7 @@ settings:
     # widget descriptor keyed by CFBundleVersion, so already-installed machines
     # keep serving the old descriptor/snapshot until the version changes. See
     # CLAUDE.md "Versioning".
-    CURRENT_PROJECT_VERSION: "2"
+    CURRENT_PROJECT_VERSION: "3"
     MARKETING_VERSION: "0.0.2"
 
 # Per-configuration xcconfig supplying BIMONTH_BUNDLE_PREFIX and DEVELOPMENT_TEAM.
