@@ -81,6 +81,43 @@ behave differently from the picker.
 `launchctl kickstart -k gui/$(id -u)/com.apple.chronod` is rejected by SIP;
 use `killall chronod` instead (it auto-respawns).
 
+## Reinstalling can strand the widget in Launch Services
+
+Symptom: after reinstalling (a fresh `DerivedData`, or replacing
+`/Applications/Bimonth.app`), the widget disappears from **Edit Widgets** —
+the gallery search finds nothing — even though `pluginkit -m -v -i
+com.example.bimonth.widget` reports it registered and the build succeeded.
+
+Root cause: Launch Services accumulates multiple registrations for the same
+widget bundle identifier, and some point at paths that no longer exist (a
+deleted `DerivedData` folder, a `Release` build that was never produced).
+chronod hits a dangling path for the identifier and drops the widget from the
+gallery entirely instead of falling back to a live registration.
+
+This is a **third** cache, independent of the two above — the
+`ENABLE_DEBUG_DYLIB` snapshot fallback and chronod's `CFBundleVersion`
+descriptor cache. A clean build and a version bump don't touch it.
+
+Inspect the registrations and look for paths that no longer exist on disk:
+
+```bash
+LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+"$LSREGISTER" -dump | grep -A2 com.example.bimonth
+```
+
+Before reinstalling, unregister the old bundle so no stale entry survives the
+swap. If it's already stranded, unregister each dead path by hand, then
+re-register the live one and reload chronod:
+
+```bash
+"$LSREGISTER" -u "<old Bimonth.app path>"   # repeat for each dead path
+pluginkit -a "/Applications/Bimonth.app/Contents/PlugIns/BimonthWidget.appex"
+killall BimonthWidget chronod 2>/dev/null
+```
+
+`lsregister -kill` (wipe the whole database) was removed by Apple as unsafe —
+targeted `-u` on the dead paths is enough.
+
 ## Where macOS caches widget state
 
 | Location | Contents | Notes |
