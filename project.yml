@@ -29,7 +29,7 @@ settings:
     # keep serving the old descriptor/snapshot until the version changes. See
     # CLAUDE.md "Versioning".
     CURRENT_PROJECT_VERSION: "4"
-    MARKETING_VERSION: "0.0.2"
+    MARKETING_VERSION: "0.0.3"
 
 # Per-configuration xcconfig supplying BIMONTH_BUNDLE_PREFIX and DEVELOPMENT_TEAM.
 # Template defaults (com.example / empty team) live in Config/Signing.xcconfig;
